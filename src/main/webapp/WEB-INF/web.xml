@@ -13,6 +13,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Mercantes del Karibe</servlet-name>
-        <url-pattern>/api/*</url-pattern>
+        <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 </web-app>
