@@ -1,4 +1,16 @@
-$font-stack:    Helvetica, sans-serif;
+@font-face {
+    font-family: 'minecraftiaregular';
+    src: url('fonts/minecraftia-regular.eot');
+    src: url('fonts/minecraftia-regular.eot?#iefix') format('embedded-opentype'),
+         url('fonts/minecraftia-regular.woff2') format('woff2'),
+         url('fonts/minecraftia-regular.woff') format('woff'),
+         url('fonts/minecraftia-regular.ttf') format('truetype'),
+         url('fonts/minecraftia-regular.svg#minecraftiaregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+$font-stack:    minecraftiaregular, Helvetica, sans-serif;
 $bg-color: #2B8AF4;
 $font-color: #DFFAEE;
 

@@ -33,7 +33,7 @@ module.exports = function (grunt) {
             applib: {  
                 src: [  
                 'bower_components/jquery/dist/jquery.min.js',  
-                'bower_components/snap.svg/dist/snap-svg.min.js',
+                'bower_components/snap.svg/dist/snap.svg-min.js',
                 'bower_components/bootstrap/dist/js/bootstrap.min.js'
                 ],  
                 dest: 'js/common.js'  
