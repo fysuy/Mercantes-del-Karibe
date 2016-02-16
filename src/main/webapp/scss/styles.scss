@@ -11,7 +11,7 @@
 }
 
 $font-stack:    minecraftiaregular, Helvetica, sans-serif;
-$bg-color: #2B8AF4;
+$bg-color: #0F3763;
 $font-color: #DFFAEE;
 
 body {
@@ -32,7 +32,12 @@ body {
     overflow: hidden;
     
     svg {
-      background: #043A5B;
+      background-color: #2B8AF4;
+      .axis {
+        fill: #3895F4;
+        stroke: #3895F4;
+        stroke-width: 2;
+      }
     }  
   }
 }
