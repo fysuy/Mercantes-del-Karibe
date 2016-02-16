@@ -14,7 +14,9 @@
     "grunt-contrib-qunit": "*",
     "grunt-contrib-uglify": "*",
     "grunt-sass": "^1.1.0",
-    "matchdep": "*"
+    "matchdep": "*",
+    "bower": "^1.7.7",
+    "grunt-contrib-watch": "^0.6.1"
   },
   "bugs": {
     "url": "https://github.com/fysuy/Mercantes-del-Karibe/issues"

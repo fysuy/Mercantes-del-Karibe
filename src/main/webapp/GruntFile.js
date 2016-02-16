@@ -2,7 +2,19 @@ module.exports = function (grunt) {
     require("matchdep").filterDev("grunt-*").forEach(grunt.loadNpmTasks);  
     // Project configuration.  
     grunt.initConfig({  
-        pkg: grunt.file.readJSON('package.json'),  
+        pkg: grunt.file.readJSON('package.json'), 
+        jshint: {
+          files: ['Gruntfile.js', 'js/*.js'],
+          options: {
+            globals: {
+              jQuery: true
+            }
+          }
+        },
+        watch: {
+          files: ['<%= jshint.files %>', 'js/*.js'],
+          tasks: ['jshint']
+        }
         sass: {
 			options: {
 				sourceMap: true
