@@ -18,4 +18,7 @@ body {
   font: 100% $font-stack;
   color: $font-color;
   background-color: $bg-color;
+  > .row {
+  	margin: 0;
+  }
 }

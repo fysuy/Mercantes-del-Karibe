@@ -9,5 +9,7 @@ body {
   font: 100% minecraftiaregular, Helvetica, sans-serif;
   color: #DFFAEE;
   background-color: #2B8AF4; }
+  body > .row {
+    margin: 0; }
 
 /*# sourceMappingURL=styles.css.map */

@@ -5,14 +5,16 @@
 	var s;
 	
 	$(document).ready(function(){
-		$.get("rest/game", function(data) {
-			$(".svg-container").append(data);
-
-			s = Snap("#svg");
-			var galleon = s.select("#ship");
-		});
+//		$.get("rest/game", function(data) {
+//			$(".svg-container").append(data);
+//
+//			s = Snap("#svg");
+//			var galleon = s.select("#ship");
+//		});
 		
 		$('body').keydown(function(e){
+			event.preventDefault();
+			s = Snap("#svg");
 			var galleon = s.select("#ship");
 			switch(e.which){
 				case 38: 

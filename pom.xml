@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uy.com.karibe</groupId>
-    <artifactId>Mercantes-del-Karibe-Demo</artifactId>
+    <artifactId>Mercantes-del-Karibe</artifactId>
     <packaging>war</packaging>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Mercantes-del-Karibe-Demo</name>
+    <name>Mercantes-del-Karibe</name>
 
     <build>
-        <finalName>Mercantes-del-Karibe-Demo</finalName>
+        <finalName>Mercantes-del-Karibe</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
