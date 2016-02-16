@@ -18,11 +18,21 @@ body {
   font: 100% $font-stack;
   color: $font-color;
   background-color: $bg-color;
+  
   > .row {
   	margin: 0;
   }
   
-  svg {
-    fill: red;
+  .svg-container {
+    border: 1px solid white;
+    display: block;
+    margin: 0 auto;
+    width: 50%;
+    height: 500px;
+    overflow: hidden;
+    
+    svg {
+      background: #043A5B;
+    }  
   }
 }

@@ -11,9 +11,28 @@
 //			s = Snap("#svg");
 //			var galleon = s.select("#ship");
 //		});
+
+		s = Snap("#svg");
+		
+		var svgWidth = 1000;
+		var svgHeight = 1000;
+		
+		var xAxisLine;
+		
+		for (var i = 0; i < svgWidth; i++) {
+			if (i % 50 == 0) {
+				xAxisLine = s.line(i, 0, i, 1000).attr({ fill: "red", stroke: "red" });
+			}
+		}
+		
+		for (var i = 0; i < svgHeight; i++) {
+			if (i % 50 == 0) {
+				xAxisLine = s.line(0, i, 1000, i).attr({ fill: "red", stroke: "red" });
+			}
+		}
 		
 		$('body').keydown(function(e){
-			s = Snap("#svg");
+			
 			var galleon = s.select("#ship");
 			var coord = galleon.getBBox();
 			switch(e.which){

@@ -11,7 +11,14 @@ body {
   background-color: #2B8AF4; }
   body > .row {
     margin: 0; }
-  body svg {
-    fill: red; }
+  body .svg-container {
+    border: 1px solid white;
+    display: block;
+    margin: 0 auto;
+    width: 50%;
+    height: 500px;
+    overflow: hidden; }
+    body .svg-container svg {
+      background: #043A5B; }
 
 /*# sourceMappingURL=styles.css.map */
