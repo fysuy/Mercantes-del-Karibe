@@ -5,27 +5,149 @@
   font-weight: normal;
   font-style: normal; }
 
-body {
-  font: 100% minecraftiaregular, Helvetica, sans-serif;
-  color: #DFFAEE;
-  background-color: #0F3763; }
-  body > .row {
-    margin: 0; }
-  body .svg-container {
-    border: 1px solid white;
-    display: block;
-    margin: 0 auto;
-    width: 50%;
-    height: 500px;
-    overflow: hidden; }
-    body .svg-container svg {
-      background-color: #2B8AF4; }
-      body .svg-container svg .axis {
-        fill: #3895F4;
-        stroke: #3895F4;
-        stroke-width: 2; }
-      body .svg-container svg .island {
-        fill: #A4ED60;
-        stroke: #A4ED60; }
+html, body {
+  margin: 0;
+  height: 100%;
+  width: 100%; }
+  html body, body body {
+    font: 30px Helvetica, sans-serif;
+    color: #fdfff9;
+    background-color: #0F3763;
+    text-transform: uppercase; }
+    html body > .row, body body > .row {
+      margin: 0; }
+    html body .svg-container, body body .svg-container {
+      border: 1px solid white;
+      display: block;
+      margin: 0 auto;
+      width: 50%;
+      height: 500px;
+      overflow: hidden; }
+      html body .svg-container svg, body body .svg-container svg {
+        background-color: #2B8AF4; }
+        html body .svg-container svg .axis, body body .svg-container svg .axis {
+          fill: #3895F4;
+          stroke: #3895F4;
+          stroke-width: 2; }
+        html body .svg-container svg .island, body body .svg-container svg .island {
+          fill: #A4ED60;
+          stroke: #A4ED60; }
+
+#container-page {
+  display: table;
+  position: absolute;
+  height: 100%;
+  width: 100%; }
+
+#container-game {
+  display: table-cell;
+  vertical-align: middle;
+  background: #2c8af4; }
+
+#container-inner {
+  position: absolute;
+  height: 100%;
+  width: 100%; }
+
+#svg {
+  margin: auto;
+  height: 100%;
+  min-height: 520px;
+  max-height: 800px;
+  width: 800px;
+  position: relative;
+  background-color: rebeccapurple; }
+
+#game-title {
+  padding-top: 60px;
+  padding-bottom: 60px; }
+
+.button-style {
+  border: 4px solid #271f17;
+  margin: 10px auto;
+  display: inline-block;
+  text-align: center; }
+
+.button-fixed-size {
+  width: 400px; }
+
+.button-locked {
+  background: #d3d0c7; }
+
+.button-yellow {
+  background: #f8c12a; }
+
+.button-yellow:hover {
+  background: #EDB41A; }
+
+.button-green {
+  background: #7abf31; }
+
+.button-green:hover {
+  background: #6DAD2A; }
+
+.button-bottom {
+  margin: 30px 20px; }
+
+.button-content-size .button-text {
+  padding: 10px 20px; }
+
+.button-text {
+  text-align: center;
+  margin: 0;
+  padding: 10px 0;
+  border: 4px solid #fdfff9; }
+
+.text-black {
+  color: #271f17; }
+
+a, a:hover, a:focus {
+  text-decoration: none;
+  color: inherit;
+  cursor: default; }
+
+p {
+  margin: 0; }
+
+.col-centered {
+  float: none;
+  margin: 0 auto; }
+
+.text-frame {
+  background: #fdfff9;
+  border: 4px solid #271f17;
+  padding: 10px;
+  width: 100%;
+  resize: none;
+  font-size: inherit;
+  text-transform: inherit;
+  box-sizing: border-box; }
+
+.padding-0 {
+  padding: 0; }
+
+.top {
+  top: 0; }
+
+.bottom {
+  bottom: 0px; }
+
+.right {
+  right: 0; }
+
+.left {
+  left: 0; }
+
+.float-left {
+  float: left; }
+
+.float-right {
+  float: right; }
+
+.position-relative {
+  position: relative; }
+
+.position-absolute {
+  position: absolute; }
 
 /*# sourceMappingURL=styles.css.map */

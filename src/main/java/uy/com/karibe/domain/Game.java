@@ -12,7 +12,8 @@ public class Game {
 		Class.forName(driver);
 
 		String url = "jdbc:mysql://localhost:3306/mdk";
-		Connection con = (Connection) DriverManager.getConnection(url, "root", "toor");
+		Connection con = (Connection) DriverManager
+				.getConnection(url, "root", "toor");
 
 		return DatabaseAccess.getMap(con);
 	}
