@@ -8,8 +8,24 @@
 body {
   font: 100% minecraftiaregular, Helvetica, sans-serif;
   color: #DFFAEE;
-  background-color: #2B8AF4; }
+  background-color: #0F3763; }
   body > .row {
     margin: 0; }
+  body .svg-container {
+    border: 1px solid white;
+    display: block;
+    margin: 0 auto;
+    width: 50%;
+    height: 500px;
+    overflow: hidden; }
+    body .svg-container svg {
+      background-color: #2B8AF4; }
+      body .svg-container svg .axis {
+        fill: #3895F4;
+        stroke: #3895F4;
+        stroke-width: 2; }
+      body .svg-container svg .island {
+        fill: #A4ED60;
+        stroke: #A4ED60; }
 
 /*# sourceMappingURL=styles.css.map */

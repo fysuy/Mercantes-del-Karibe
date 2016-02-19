@@ -24,5 +24,8 @@ body {
         fill: #3895F4;
         stroke: #3895F4;
         stroke-width: 2; }
+      body .svg-container svg .island {
+        fill: #A4ED60;
+        stroke: #A4ED60; }
 
 /*# sourceMappingURL=styles.css.map */
