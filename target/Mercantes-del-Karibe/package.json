@@ -15,6 +15,7 @@
     "grunt-contrib-qunit": "*",
     "grunt-contrib-uglify": "*",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-express": "^1.4.1",
     "grunt-sass": "^1.1.0",
     "jshint-stylish": "^2.1.0",
     "matchdep": "*"
