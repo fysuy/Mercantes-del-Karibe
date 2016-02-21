@@ -1,9 +1,17 @@
 var appJs = (function  () {
   var game = new Phaser.Game(800, 600, Phaser.AUTO, "game-container", { preload: preload, create: create, update: update });
 
-  var ocean, port, submarine;
+  var ocean, port, submarine, shadowTexture;
 
   var currentSpeed = 0;
+  var LIGHT_RADIUS = 100;
+
+  $(document).ready(function() {
+    $("#btnLight").click(function(event) {
+      event.preventDefault();
+      game.camera.scale = new Phaser.Point(100, 100);
+    });
+  });
 
   var distanceBetweenAngles = function(alpha, beta) {
     var phi = Math.abs(beta - alpha) % 360;
@@ -41,10 +49,31 @@ var appJs = (function  () {
     game.camera.focusOnXY(0, 0);
 
     cursors = game.input.keyboard.createCursorKeys();
+
+    shadowTexture = game.add.bitmapData(game.width, game.height);
+    lightSprite = game.add.image(0, 0, shadowTexture);
+    lightSprite.blendMode = Phaser.blendModes.MULTIPLY;
+    game.input.activePointer.x = submarine.x;
+    game.input.activePointer.y = submarine.y;
   }
+
+  var updateShadowTexture = function() {
+    shadowTexture.context.fillStyle = 'rgb(100, 100, 100)';
+    shadowTexture.context.fillRect(0, 0, game.width, game.height);
+
+    // Draw circle of light
+    shadowTexture.context.beginPath();
+    shadowTexture.context.fillStyle = 'rgb(255, 255, 255)';
+    shadowTexture.context.arc(submarine.x, submarine.y, LIGHT_RADIUS, 0, Math.PI*2);
+    shadowTexture.context.fill();
+
+    // This just tells the engine it should update the texture cache
+    shadowTexture.dirty = true;
+};
 
   function update() {
     game.physics.arcade.collide(port, submarine);
+    updateShadowTexture();
 
     // if (cursors.left.isDown)
     // {
