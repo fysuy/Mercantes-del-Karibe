@@ -12,7 +12,7 @@
 
 $font-stack:    /* minecraftiaregular, */Helvetica, sans-serif;
 $bg-color: #0F3763;
-$font-color: #fdfff9;
+$color-white: #fdfff9;
 
 $color-yellow: #f8c12a;
 $color-yellow-dark: #EDB41A;
@@ -29,7 +29,7 @@ html, body {
 
   body {
     font: 30px $font-stack;
-    color: $font-color;
+    color: $color-white;
     background-color: $bg-color;
     text-transform: uppercase;
     
@@ -83,16 +83,16 @@ html, body {
 #svg {
   margin: auto;
   height: 100%;
-  min-height: 520px;
+  min-height: 660px;
   max-height: 800px;
   width: 800px;
   position: relative;
-  background-color: rebeccapurple;
+  background-color: #2c8af4;
 }
 
 #game-title {
-  padding-top: 60px;
-  padding-bottom: 60px;
+  padding-top: 40px;
+  padding-bottom: 40px;
 }
 
 .button-style {
@@ -108,7 +108,7 @@ html, body {
 .button-green { background: $color-green; }
 .button-green:hover { background: $color-green-dark; }
 
-.button-bottom { margin: 30px 20px; }
+.button-bottom { margin: 10px 20px 30px 20px; }
 .button-content-size .button-text { padding: 10px 20px; }
 .button-text {
   text-align: center;
@@ -117,9 +117,8 @@ html, body {
   border: 4px solid #fdfff9;
 }
 
-.text-black {
-  color: $color-black;
-}
+.text-black { color: $color-black; }
+.text-yellow { color: $color-yellow-dark; }
 
 a, a:hover, a:focus {
   text-decoration: none;
@@ -138,7 +137,7 @@ p {
 
 .text-frame {
   background: #fdfff9;
-  border: 4px solid #271f17;
+  border: 4px solid $color-black;
   padding: 10px;
   width: 100%;
   resize: none;
@@ -147,7 +146,22 @@ p {
   box-sizing: border-box;
 }
 
+.text-frame.x-scrollable { height: 100px; }
+.x-scrollable {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.divider {
+  height: 4px;
+  background-color: $color-white;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: block;
+}
+
 .padding-0 { padding: 0; }
+.margin-bottom { margin-bottom: 20px; }
 .top { top: 0; }
 .bottom { bottom: 0px; }
 .right { right: 0; }
@@ -156,3 +170,12 @@ p {
 .float-right { float: right; }
 .position-relative { position: relative; }
 .position-absolute { position: absolute; }
+
+.row { padding-bottom: 10px; }
+.vertical-center {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.text-title { text-decoration: underline; }
