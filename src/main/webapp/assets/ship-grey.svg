@@ -15,6 +15,7 @@
 		<rect x="27" y="66.004" width="18" height="6"/>
 		<rect x="45" y="59.996" width="12" height="6"/>
 		<polygon points="39,36 39,30 33,30 33,36 27,36 27,53.996 45,53.996 45,36 		"/>
+		<circle opacity="0" cx="36" cy="42" r="36"/>
 	</g>
 	<g>
 		<g>
@@ -49,6 +50,7 @@
 			<g>
 				<polygon fill="#B6B2C0" points="39,30 39,24 33,24 33,30 27,30 27,47.996 45,47.996 45,30 				"/>
 			</g>
+			<circle opacity="0" fill="#BE1E2D" cx="36" cy="36" r="36"/>
 		</g>
 	</g>
 </g>
