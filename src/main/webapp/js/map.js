@@ -1,4 +1,4 @@
-(function() {
+var mapJs = (function() {
   var map, 
     mapWidth = 1000, 
     mapHeight = 1000,
@@ -42,19 +42,24 @@
     });
   };
 
-  var init = function() {
-    $mapContainer = $(".svg-container")[0];
-    map = Snap(mapWidth, mapHeight);
-    map.appendTo($mapContainer);
-
-    drawXAxisLines();
-    drawYAxisLines();
-
-    drawIslands();
-    drawPort();
+  var getMap = function() {
+    return Snap(".world-map");
   };
 
-  $(document).ready(function() {
-    init();
-  });
+  var init = function() {
+    $mapContainer = $(".svg-container")[0];
+    map = Snap(mapWidth, mapHeight).addClass("world-map");
+    map.appendTo($mapContainer);
+
+     // drawXAxisLines();
+     // drawYAxisLines();
+
+     drawIslands();
+     // drawPort();
+  };
+
+  return {
+    initMap: init,
+    getMap: getMap
+  }
 })();
