@@ -1,133 +1,73 @@
 var appJs = (function  () {
-    var map;
+  var $container = $(".game-container");
+  var game = new Phaser.Game(800, 600, Phaser.AUTO, "game-container", { preload: preload, create: create, update: update });
 
-    var keysCharcode = {
-      UP : 38,
-      DOWN : 40,
-      RIGHT : 39,
-      LEFT: 37
+  var ocean;
+  var submarine;
+  var shadow;
+
+  var currentSpeed = 0;
+
+  function preload() {
+    game.load.image('ocean', 'assets/pattern-land.png');
+    game.load.image('submarine', 'assets/ship-grey.png');
+  }
+
+  function create() {
+    game.world.setBounds(-1000, -1000, 2000, 2000);
+    game.scale.pageAlignHorizontally = true;
+    game.scale.pageAlignVertically = true;
+    game.scale.refresh();
+
+    ocean = game.add.tileSprite(0, 0, 800, 600, 'ocean');
+    ocean.fixedToCamera = true;
+
+    submarine = game.add.sprite(0, 0, 'submarine', 'submarine');
+    submarine.anchor.setTo(0.5, 0.5);
+    submarine.animations.add('move', ['submarine'], 20, true);
+
+    //  This will force it to decelerate and limit its speed
+    game.physics.enable(submarine, Phaser.Physics.ARCADE);
+    submarine.body.drag.set(0.2);
+    submarine.body.maxVelocity.setTo(400, 400);
+    submarine.body.collideWorldBounds = true;
+
+    game.camera.follow(submarine);
+    game.camera.deadzone = new Phaser.Rectangle(150, 150, 500, 300);
+    game.camera.focusOnXY(0, 0);
+
+    cursors = game.input.keyboard.createCursorKeys();
+  }
+
+  function update() {
+    if (cursors.left.isDown)
+    {
+        submarine.angle -= 4;
+    }
+    else if (cursors.right.isDown)
+    {
+        submarine.angle += 4;
     }
 
-    var drawShip = function() {
-      Snap.load("assets/ship-grey-02.svg", function(ship) {
-        //var g = ship.select("g")
-                    //ship.addClass("ship submarine");
-                    //.transform().localMatrix.translate(100,100)
-                    //.transform("t100,100");
-                    //+ 100 + ship.cx + "," + 100 + ship.cy
-        mapJs.getMap().append(ship);
-      });
-    };
-
-    var distanceBetweenAngles = function(alpha, beta) {
-        var phi = Math.abs(beta - alpha) % 360;
-        var distance = phi > 180 ? 360 - phi : phi;
-        return distance;
+    if (cursors.up.isDown)
+    {
+        //  The speed we'll travel at
+        currentSpeed = 300;
     }
-
-    var rotate = function(el, a, cx, cy, callback) {
-      var tstr = "r" + a + "," + cx + "," + cy;
-
-      el.animate({ r: a }, 1000, mina.linear, function() {
-        if (callback) { callback() };
-      })
-
-      // el.animate({ transform: tstr }, 1000, mina.easein, function() {
-      //   el.transform().localMatrix.rotate(a, cx, cy);
-      //   el.transform(el.transform().localMatrix.toTransformString());
-      //   el.transform().localMatrix.add(el.transform().localMatrix.toTransformString());
-
-      //   //el.data("transform", tstr);
-        
-      //   if(callback) {
-      //     callback();
-      //   }
-      // });
-    }
-
-    var translate = function(el, x, y, callback) {
-      var tstr = "t" + x + "," + y;
-
-      el.animate({ transform: tstr }, 1000, mina.easein, function() {
-        el.transform().localMatrix.translate(x, y);
-        el.transform(el.transform().localMatrix.toTransformString());
-        if(callback) {
-          callback();
+    else
+    {
+        if (currentSpeed > 0)
+        {
+            currentSpeed -= 4;
         }
-      });
     }
 
-    var translateX = function(el, x) {
-      el.animate({ x: x }, 1000, mina.linear);
-    };
-
-    var translateY = function(el, y) {
-      el.animate({ y: y }, 1000, mina.linear);
-    };
-
-    var init = function() {
-      mapJs.initMap();
-      
-      drawShip();
-
-      $('body').keydown(function(e) {
-        var r;
-        var galleon = Snap.select(".submarine");
-        var coord = galleon.getBBox();  
-        var localMatrix = galleon.transform().localMatrix;
-
-        switch(e.which) {
-          case keysCharcode.UP: 
-            event.preventDefault();
-            r = distanceBetweenAngles(0, localMatrix.split().rotate);
-            localMatrix.rotate(r, coord.cx, coord.cy);
-            galleon.animate({ transform: localMatrix.toTransformString() }, 1000, mina.linear,
-              function() {
-                localMatrix.translate(coord.x + 100, coord.cy);
-                galleon.animate({ transform: localMatrix.toTransformString() });
-              });
-            break;
-          case keysCharcode.DOWN: 
-            event.preventDefault();
-            r = distanceBetweenAngles(180, localMatrix.split().rotate);
-            rotate(galleon, r, coord.cx, coord.cy, function() {
-              translateY(galleon,100);
-            });
-            break;
-          case keysCharcode.RIGHT: 
-            event.preventDefault();
-            r = distanceBetweenAngles(270, localMatrix.split().rotate);             
-            localMatrix.rotate(r, coord.cx, coord.cy);
-            galleon.animate({ 
-              transform: localMatrix.toTransformString() },
-              1000, 
-              mina.linear,
-              function() {
-                localMatrix.translate(coord.x + 100, coord.cy);
-                galleon.animate({ transform: localMatrix.toTransformString() });
-              });
-            break;
-          case keysCharcode.LEFT: 
-            r = distanceBetweenAngles(360, localMatrix.split().rotate);
-            localMatrix.rotate(r, coord.cx, coord.cy);
-            galleon.animate({ 
-              transform: localMatrix.toTransformString() },
-              1000, 
-              mina.linear,
-              function() {
-                localMatrix.translate(coord.x + 100, coord.cy);
-                galleon.animate({ transform: localMatrix.toTransformString() });
-              });
-            break;
-        }
-      });
-    };
-
-    return {
-      initApp: init
+    if (currentSpeed > 0)
+    {
+        game.physics.arcade.velocityFromRotation(submarine.rotation, currentSpeed, submarine.body.velocity);
     }
+
+    ocean.tilePosition.x = -game.camera.x;
+    ocean.tilePosition.y = -game.camera.y;
+  }   
 })();
-
-$(document).ready(function() {
-  appJs.initApp();
-});

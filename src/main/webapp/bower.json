@@ -13,6 +13,7 @@
   "dependencies": {
     "jquery": "~2.2.0",
     "snap.svg": "~0.4.1",
-    "bootstrap": "~3.3.6"
+    "bootstrap": "~3.3.6",
+    "phaser": "^2.4.6"
   }
 }
