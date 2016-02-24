@@ -23,21 +23,30 @@ import javax.websocket.Session;
 @ServerEndpoint("/wsServerEndpoint")
 public class WebSocketServerEndpoint {
 
-	static Set<Session> users = Collections.synchronizedSet(new HashSet<Session>());
+	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
 	@OnOpen
-	public void handleOpen(Session userSession){
-		users.add(userSession);
+	public void onOpen(Session session){
+		  	System.out.println(session.getId() + " has opened a connection"); 
+	        sendMessageToAll("User has connected");
+	        try {
+	            session.getBasicRemote().sendText("Connection Established");
+	        } catch (IOException ex) {
+	            ex.printStackTrace();
+	        }
+	        sessions.add(session);
 	}
 
 	@OnClose
-	public void handleClose(Session userSession){
-		users.remove(userSession);
+	public void onClose(Session session){
+	        sessions.remove(session);
+	        System.out.println("Session " +session.getId()+" has ended");
+	        sendMessageToAll("User has disconnected");
 	}
 
-	@OnMessage
-	public void handleMessage(String msg, Session userSession) throws IOException {
-		String user = (String) userSession.getUserProperties().get("user");
+	//@OnMessage
+	//public void handleMessage(String msg, Session userSession) throws IOException {
+		/*String user = (String) userSession.getUserProperties().get("user");
 		if(user == null) {
 			userSession.getUserProperties().put("user", msg);
 		} else {
@@ -45,8 +54,14 @@ public class WebSocketServerEndpoint {
 			while(iterator.hasNext()){
 				iterator.next().getBasicRemote().sendText(buildJsonData(user, msg));
 			}
-		}
-	}
+		}*/
+	//	}
+	
+	 @OnMessage
+	 public void onMessage(String message, Session session){
+	        System.out.println("Message from " + session.getId() + ": " + message);
+	        sendMessageToAll(message);
+	    }
 
 	private String buildJsonData(String user, String msg) {
 		
@@ -66,4 +81,14 @@ public class WebSocketServerEndpoint {
 
 		return stringWriter.toString();
 	}
+	
+	private void sendMessageToAll(String message){
+        for(Session s : sessions){
+            try {
+                s.getBasicRemote().sendText(message);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 }
