@@ -1,29 +1,22 @@
 package uy.com.karibe.access;
 
-import java.sql.ResultSet;
+import java.util.Date;
 
 import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.Statement;
+import com.mysql.jdbc.PreparedStatement;
 
 public class DatabaseAccess {
-	public static String getMap (Connection con) throws Exception{
-		String query = Queries.getMap();
-		String map = "";
+	public static void insertException(Connection con, Exception ex){
+		String query = Queries.insertException();
 		try
 		{			
-			Statement stmt = (Statement) con.createStatement();
-			ResultSet rs = stmt.executeQuery(query);
-			while (rs.next())
-			{	
-				map = rs.getString("map");
-			}
-			rs.close();
-			stmt.close();
-				
+			PreparedStatement pstmt = (PreparedStatement)con.prepareStatement(query);
+			pstmt.setString(1, ex.getMessage());
+			pstmt.setDate(2, (java.sql.Date)new Date());
+			pstmt.executeUpdate();
+			pstmt.close();
 		} catch(Exception e) {
-			throw e;
+			ex.printStackTrace();
 		}
-		
-		return map;
 	}
 }
