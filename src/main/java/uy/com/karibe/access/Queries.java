@@ -5,4 +5,9 @@ public class Queries {
 		String s = "insert into exceptions values (?,?)";
 		return s;
 	}
+	
+	public static String insertIsland() {
+		String s = "insert into islands values (?, ?, ?, ?)";
+		return s;
+	}
 }

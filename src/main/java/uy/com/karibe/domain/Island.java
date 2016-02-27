@@ -1,40 +1,47 @@
 package uy.com.karibe.domain;
 
 public class Island {
-	private float x;
-	private float y;
-	private float width;
-	private float height;
+	private int x;
+	private int y;
+	private int width;
+	private int height;
 	
-	public float getX() {
+	public Island(int x, int y, int width, int height) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = x;
+	}
+	
+	public int getX() {
 		return x;
 	}
 	
-	public float getY() {
+	public int getY() {
 		return y;
 	}
 	
-	public float getWidth() {
+	public int getWidth() {
 		return width;
 	}
 	
-	public float getHeight() {
+	public int getHeight() {
 		return height;
 	}
 	
-	public void setX(float x) {
+	public void setX(int x) {
 		this.x = x;
 	}
 	
-	public void setY(float y) {
+	public void setY(int y) {
 		this.y = y;
 	}
 	
-	public void setWidth(float width) {
+	public void setWidth(int width) {
 		this.width = width;
 	}
 	
-	public void setHeight(float height) {
+	public void setHeight(int height) {
 		this.height = height;
 	}
 }
