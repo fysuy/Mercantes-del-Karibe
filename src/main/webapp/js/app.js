@@ -70,21 +70,29 @@ var app = (function  () {
 
     submarine = ships.getSubmarine();
     blue = ships.getBlue();
+    green = ships.getGreen();
 
     var shipType = getParameterByName("shipType");
 
-    if (shipType == ShipsType.Submarine) {
-      setPlayerShip(submarine);
-      webSocket.setUser(ShipsType.Submarine);
-    } else if (shipType == ShipsType.Blue) {
-      setPlayerShip(blue);
-      webSocket.setUser(ShipsType.Blue);
+    switch (shipType) {
+      // Player submarino
+      case ShipsType.Submarine:
+        setPlayerShip(submarine);
+        webSocket.setUser(ShipsType.Submarine);
+        break;
+      
+      // Player carguero azul
+      case ShipsType.Blue:
+        setPlayerShip(blue);
+        webSocket.setUser(ShipsType.Blue);
+        break;
+      
+      // Player carguero verde
+      case ShipsType.Green:
+        setPlayerShip(green);
+        webSocket.setUser(ShipsType.Green);
+        break;
     }
-
-    // Seteo la mascara (alcanze de la luz) dependiendo del barco
-    //map.generateMask(ship.el);
-    mask = blue.vision;
-    game.world.mask = mask;
 
     // Seteo que la camara siga al submarino
     game.camera.follow(ship.el);
@@ -115,6 +123,12 @@ var app = (function  () {
                 blue.el.y = jsonMsg.y;
                 blue.el.rotation = jsonMsg.rotation;
               }
+
+              if (jsonMsg.user == ShipsType.Green) {
+                green.el.x = jsonMsg.x;
+                green.el.y = jsonMsg.y;
+                green.el.rotation = jsonMsg.rotation;
+              }
             }
             break;
 
@@ -122,6 +136,10 @@ var app = (function  () {
           case WebSocketIDs.LightOnOff:
             if (jsonMsg.user == ShipsType.Blue) {
               blue.light = jsonMsg.value;
+            }
+
+            if (jsonMsg.user == ShipsType.Green) {
+              green.light = jsonMsg.value;
             }
             break;
 
@@ -174,12 +192,22 @@ var app = (function  () {
     Si el barco tiene la luz prendida, el submarino lo ve siempre
     */ 
     if (ship.el.type == ShipsType.Submarine) {
+      // Actualizo el barco azul
       if (blue.light == false 
         && game.physics.arcade.distanceBetween(submarine.el, blue.el) > 200) {
           blue.el.alpha = 0;
       } else {
         blue.el.alpha = 1;
       }
+
+      // Actualizo el barco verde
+      if (green.light == false 
+        && game.physics.arcade.distanceBetween(submarine.el, green.el) > 200) {
+          green.el.alpha = 0;
+      } else {
+        green.el.alpha = 1;
+      }
+
     }    
 
     game.physics.arcade.collide([ny.land, mvd.land, caribbean.islands], ship.el, 
