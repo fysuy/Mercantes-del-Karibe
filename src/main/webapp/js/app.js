@@ -4,6 +4,14 @@ var ShipsType = {
   Green: 'green'
 };
 
+var WebSocketIDs = {
+  UpdateCoordinates: 'updateCoordinates',
+  BulletShot: 'bulletShot',
+  BulletShotDouble: 'bulletShotDouble',
+  MissileShot: 'missileShot',
+  LightOnOff: 'lightOnOff'
+};
+
 var wsCounter = 0;
 
 function getParameterByName(name, url) {
@@ -92,21 +100,53 @@ var app = (function  () {
         var jsonMsg = JSON.parse(message.data);
 
         switch(jsonMsg.id) {
-          case 'updateCoordinates':
-            if (jsonMsg.data.user != ship.el.type) {
-              if (jsonMsg.data.user == ShipsType.Submarine) {
-                submarine.el.x = jsonMsg.data.x;
-                submarine.el.y = jsonMsg.data.y;
-                submarine.el.rotation = jsonMsg.data.rotation;
+
+          // Update de la posicion de los barcos
+          case WebSocketIDs.UpdateCoordinates:
+            if (jsonMsg.user != ship.el.type) {
+              if (jsonMsg.user == ShipsType.Submarine) {
+                submarine.el.x = jsonMsg.x;
+                submarine.el.y = jsonMsg.y;
+                submarine.el.rotation = jsonMsg.rotation;
               }
 
-              if (jsonMsg.data.user == ShipsType.Blue) {
-                blue.el.x = jsonMsg.data.x;
-                blue.el.y = jsonMsg.data.y;
-                blue.el.rotation = jsonMsg.data.rotation;
+              if (jsonMsg.user == ShipsType.Blue) {
+                blue.el.x = jsonMsg.x;
+                blue.el.y = jsonMsg.y;
+                blue.el.rotation = jsonMsg.rotation;
               }
             }
             break;
+
+          // Update de la luz
+          case WebSocketIDs.LightOnOff:
+            if (jsonMsg.user == ShipsType.Blue) {
+              blue.light = jsonMsg.value;
+            }
+            break;
+
+          // Update del disparo azul
+          case WebSocketIDs.BulletShotDouble:
+            if (jsonMsg.user == ShipsType.Blue) {
+              blue.fireBullet();
+            }
+            break;
+
+          // Update del disparo bala submarino
+          case WebSocketIDs.BulletShot:
+            if (jsonMsg.user == ShipsType.Submarine) {
+              submarine.fireBullet();
+            }
+            break;
+
+          // Update del misil submarino
+          case WebSocketIDs.MissileShot:
+            if (jsonMsg.user == ShipsType.Submarine) {
+              submarine.fireMissile();
+            }
+            break;
+
+
         }
       
         
@@ -136,7 +176,7 @@ var app = (function  () {
     if (ship.el.type == ShipsType.Submarine) {
       if (blue.light == false 
         && game.physics.arcade.distanceBetween(submarine.el, blue.el) > 200) {
-          blue.el.alpha = 0.2;
+          blue.el.alpha = 0;
       } else {
         blue.el.alpha = 1;
       }
