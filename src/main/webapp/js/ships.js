@@ -74,13 +74,10 @@ var ships = (function() {
 
       if (this.hasMoved && this.allowSend)  {
         var message = {
-          id: 'updateCoordinates',
-          data: {
-            x: this.el.x,
-            y: this.el.y,
-            rotation: this.el.rotation
-          }
-          
+          id: WebSocketIDs.UpdateCoordinates,
+          x: this.el.x,
+          y: this.el.y,
+          rotation: this.el.rotation
         }
         webSocket.sendMessage(message);
         this.allowSend = false;
@@ -106,6 +103,7 @@ var ships = (function() {
     Ship.call(this, game, type, x, y);
 
     this.light = false;
+    this.lightChange = false;
     this.lightRate = 500;
     this.lightTimer = 0;
 
@@ -148,6 +146,7 @@ var ships = (function() {
       if (this.game.time.now > this.lightTimer) {
         this.lightTimer = game.time.now + this.lightRate;
         this.turnLightOnOff();
+        this.updateLightOnOff();
       }
     }
 
@@ -155,42 +154,42 @@ var ships = (function() {
       if (this.game.time.now > this.nextFire) {
         this.nextFire = game.time.now + this.fireRateBullet;
         this.fireBullet();
+        this.updateBulletShot();
       }
     }
   }
 
   CargoBoat.prototype.turnLightOnOff = function() {
     this.light = !(this.light);
-    console.log("LUZ ENCENDIDA: " + this.light);
+  
     this.vision.clear();
     this.vision = game.add.graphics(this.x, this.y);
     this.vision.beginFill(0x000000);
     if (this.light) {
       this.vision.drawCircle(0, 0, 400);
     } else {
-
       this.vision.drawCircle(0, 0, 200);
     }
 }
 
 
-  CargoBoat.prototype.turnLight = function(boolean) {
-    console.log("LUZ " + boolean);
-    if (boolean) {
-      this.vision.drawCircle(0, 0, 100);
-    } else {
-      this.vision.drawCircle(0, 0, 70);
-    }
-    this.light = boolean;
-
+CargoBoat.prototype.updateLightOnOff = function() {
+  var message = {
+    id: WebSocketIDs.LightOnOff,
+    value: this.light
   }
+  webSocket.sendMessage(message);
+}
+
+CargoBoat.prototype.updateBulletShot = function() {
+  var message = {
+    id: WebSocketIDs.BulletShotDouble
+  }
+  webSocket.sendMessage(message);
+}
 
   CargoBoat.prototype.fireBullet = function() {
-    if (this.el.alive) {
-      // Verifico que el barco siga vivo
-      // if (this.game.time.now > this.nextFire) {
-      //     this.nextFire = game.time.now + this.fireRateBullet;
-          
+    if (this.el.alive) {          
           this.bulletLeft.reset(this.el.x, this.el.y);
           this.bulletRight.reset(this.el.x, this.el.y);
 
@@ -263,22 +262,42 @@ var ships = (function() {
     Ship.prototype.update.call(this, cursors);
 
     if (this.bulletButton.isDown) {
-      this.fireBullet();
+      if (this.game.time.now > this.nextFire) {
+        this.nextFire = game.time.now + this.fireRateBullet;
+        this.fireBullet();
+        this.updateBulletShot();
+      }
     }
 
     if (this.missileButton.isDown) {
-      this.fireMissile();
+      if (this.game.time.now > this.nextFireMissile) {
+        this.nextFireMissile = game.time.now + this.fireRateMissile;
+        this.fireMissile();
+        this.updateMissileShot();
+      }
     }
   }
 
+  Submarine.prototype.updateBulletShot = function() {
+    var message = {
+      id: WebSocketIDs.BulletShot
+    }
+    webSocket.sendMessage(message);
+  }
+
+  Submarine.prototype.updateMissileShot = function() {
+    var message = {
+      id: WebSocketIDs.MissileShot
+    }
+    webSocket.sendMessage(message);
+  }
+
   Submarine.prototype.fireBullet = function() {
-    console.log("SUBMARINE FIRE BULLET");
     if (this.el.alive) {
       // Verifico que el submarino siga vivo
-      if (this.game.time.now > this.nextFire) {
-          this.nextFire = game.time.now + this.fireRateBullet;
-          this.bullet.reset(this.el.x, this.el.y);
-          this.bullet.rotation = this.el.rotation;
+
+      this.bullet.reset(this.el.x, this.el.y);
+      this.bullet.rotation = this.el.rotation;
 
           //  Disparo la bala considerando la direccion del barco
           this.game.physics.arcade.velocityFromRotation(this.el.rotation, 500, this.bullet.body.velocity);
@@ -292,18 +311,15 @@ var ships = (function() {
 
           tween.start();
         }
-    }
-  }
+      }
 
-  Submarine.prototype.fireMissile = function() {
-    console.log("SUBMARINE FIRE MISSILE");
-    if (this.el.alive) {
+      Submarine.prototype.fireMissile = function() {
+
+        if (this.el.alive) {
       // Verifico que el submarino siga vivo
-      if (this.game.time.now > this.nextFireMissile) {
-          console.log("SUBMARINE FIRE MISSILE ADENTRO");
-          this.nextFireMissile = game.time.now + this.fireRateMissile;
-          this.missile.reset(this.el.x, this.el.y);
-          this.missile.rotation = this.el.rotation;
+
+      this.missile.reset(this.el.x, this.el.y);
+      this.missile.rotation = this.el.rotation;
 
           //  Disparo el misil en la direccion del barco
           this.game.physics.arcade.velocityFromRotation(this.el.rotation, 500, this.missile.body.velocity);
@@ -316,9 +332,8 @@ var ships = (function() {
           });
 
           tween.start();
+        }
       }
-    }
-  }
 
   // Variables de los barcos
   var submarine, blue, green, game;
