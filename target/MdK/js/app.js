@@ -74,7 +74,9 @@ var app = (function  () {
     }
 
     // Seteo la mascara (alcanze de la luz) dependiendo del barco
-    map.generateMask(ship.el);
+    //map.generateMask(ship.el);
+    mask = blue.vision;
+    game.world.mask = mask;
 
     // Seteo que la camara siga al submarino
     game.camera.follow(ship.el);
@@ -89,17 +91,25 @@ var app = (function  () {
       try {
         var jsonMsg = JSON.parse(message.data);
 
-        if (jsonMsg.user == ShipsType.Submarine && jsonMsg.x) {
-          submarine.el.x = jsonMsg.x;
-          submarine.el.y = jsonMsg.y;
-          submarine.el.rotation = jsonMsg.rotation;
-        }
+        switch(jsonMsg.id) {
+          case 'updateCoordinates':
+            if (jsonMsg.data.user != ship.el.type) {
+              if (jsonMsg.data.user == ShipsType.Submarine) {
+                submarine.el.x = jsonMsg.data.x;
+                submarine.el.y = jsonMsg.data.y;
+                submarine.el.rotation = jsonMsg.data.rotation;
+              }
 
-        if (jsonMsg.user == ShipsType.Blue && jsonMsg.x) {
-          blue.el.x = jsonMsg.x;
-          blue.el.y = jsonMsg.y;
-          blue.el.rotation = jsonMsg.rotation;
+              if (jsonMsg.data.user == ShipsType.Blue) {
+                blue.el.x = jsonMsg.data.x;
+                blue.el.y = jsonMsg.data.y;
+                blue.el.rotation = jsonMsg.data.rotation;
+              }
+            }
+            break;
         }
+      
+        
       } catch(err) {
         console.log(err);
       }   
@@ -110,32 +120,101 @@ var app = (function  () {
     caribbean = map.getCaribbean();
     ny = map.getNY();
     mvd = map.getMvd();
-    mask = map.getMask();
+    // mask = map.getMask(ship);
+    
+    mask = ship.vision;
+    game.world.mask = mask;
 
     mask.x = ship.el.body.x + 36;
     mask.y = ship.el.body.y + 36;
 
-    game.physics.arcade.collide([ny.land, mvd.land], ship.el);
-    game.physics.arcade.collide(ship.el, caribbean.islands);
+    /* 
+    Si el barco tiene la luz apagada, el submarino
+    lo ve solo dentro de un radio de 200.
+    Si el barco tiene la luz prendida, el submarino lo ve siempre
+    */ 
+    if (ship.el.type == ShipsType.Submarine) {
+      if (blue.light == false 
+        && game.physics.arcade.distanceBetween(submarine.el, blue.el) > 200) {
+          blue.el.alpha = 0.2;
+      } else {
+        blue.el.alpha = 1;
+      }
+    }    
 
-    game.physics.arcade.overlap(ny.port, ship.el, function() {
-      alert("LLego!");
-      submarine.el.kill();
+    game.physics.arcade.collide([ny.land, mvd.land, caribbean.islands], ship.el, 
+      function() {
+      //ship.el.kill();
+      alert("¡NAUFRAGIO!");
+    });
+    
+
+    // Azul llego
+    game.physics.arcade.overlap(ny.port, blue.el, function() {
+      alert("LLEGO EL AZUL");
+      //blue.el.kill();
       
       // Una vez que muere puede seguir al otro
       //game.camera.follow(ships.blue);
       //mask.destroy();
+    })
+
+
+
+    // Submarino vs azul
+    game.physics.arcade.overlap(blue.el, submarine.el, function() {
+      //blue.el.kill();
+      //submarine.el.kill();
+      alert("CHOCAN LOS BARCOS");
     });
     
-    game.physics.arcade.collide(blue.el, submarine.el, function() {
-      //red.body.velocity = { x: 0, y: 0 };
-      //submarine.body.velocity = { x: 0, y: 0 };
-
-      alert("Boom!");
-      blue.el.kill();
+    // Submarino vs bulletLeft
+    game.physics.arcade.overlap(blue.bulletLeft, submarine.el, function() {
+      blue.bulletLeft.kill();
+      var destroyed = submarine.damage('bullet');
+      if (destroyed) {
+        alert("SUBMARINO HUNDIDO");
+      }
     });
 
+    // Submarino vs bulletLeft
+    game.physics.arcade.overlap(blue.bulletRight, submarine.el, function() {
+      blue.bulletRight.kill();
+      var destroyed = submarine.damage('bullet');
+      if (destroyed) {
+        alert("SUBMARINO HUNDIDO");
+      }
+    });
+
+    // Azul vs bullet
+    game.physics.arcade.overlap(submarine.bullet, blue.el, function() {
+      submarine.bullet.kill();
+      var destroyed = blue.damage('bullet');
+      if (destroyed) {
+        alert("AZUL HUNDIDO");
+      }
+    });
+
+    // Azul vs misil
+    game.physics.arcade.overlap(submarine.missile, blue.el, function() {
+      submarine.missile.kill();
+      var destroyed = blue.damage('missile');
+      if (destroyed) {
+        alert("AZUL HUNDIDO");
+      }
+    });
+
+
+    // Manda la posicion al server
+    // if (submarine.alive && sendToServer) {
+    //   webSocketJs.sendMessage('submarine', submarine.x, submarine.y, submarine.angle);
+    // }
+  
+    // Recibe la posición del oponente y la actualiza
+    //
+
     ship.update(cursors);
+    //blue.update();
 
     // game.physics.arcade.collide(bullet, red, function() {
     //   ships.blue.kill();

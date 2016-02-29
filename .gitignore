@@ -24,10 +24,7 @@ coverage
 build/Release
 
 # Dependency directory
-src/main/webapp/node_modules/
-
-# Bower
-src/main/webapp/bower_components/
+src/main/webapp/node_modules/**
 
 # Optional npm cache directory
 .npm

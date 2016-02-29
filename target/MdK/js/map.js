@@ -1,6 +1,8 @@
 var map = (function  () {
   var ny, mvd, caribbean, sea, mask, game;
 
+  var maskLightOn, maskLightOff;
+
   var worldBounds = { 
     xTopLeft: 0,
     yTopLeft: 0,
@@ -68,12 +70,12 @@ var map = (function  () {
     if (_admin) {
       // Para el instalador que todo quede en http://localhost:8080/Mercantes-del-Karibe como base url 
       // (cliente y servidor) en tonces es mas sencillo el string del post
-      $.post("rest/island/saveIslands", JSON.stringify(islands), function(response) {
+      $.post("http://192.168.1.46:8080/Mercantes-del-Karibe/rest/game/saveIslands", islands, function(response) {
         console.log(response);
       });
     }
-  
-}
+  }
+
   var generatePorts = function() {
     ny = {}, mvd = {};
 
@@ -154,6 +156,7 @@ var map = (function  () {
   };
 
   // Selectoras para los objetos
+
 
   var getCaribbean = function() { return caribbean; }
   var getNY = function() { return ny; }
