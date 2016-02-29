@@ -1,18 +1,12 @@
 package uy.com.karibe.websocket;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonWriter;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -56,24 +50,24 @@ public class WebSocketServerEndpoint {
 		sendMessageToAll(message, session);
 	}
 
-	private String buildJsonData(String user, String msg) {
-
-		JsonReader jsonReader = Json.createReader(new StringReader(msg));
-		JsonObject jsonObj = jsonReader.readObject();
-		jsonReader.close();
-
-		JsonObject jsonObject = Json.createObjectBuilder()
-				.add("user", user)
-				.add("x", jsonObj.getInt("x"))
-				.add("y", jsonObj.getInt("y"))
-				.add("angle", jsonObj.getInt("angle"))
-				.build();
-
-		StringWriter stringWriter = new StringWriter();
-		try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {jsonWriter.write(jsonObject);}
-
-		return stringWriter.toString();
-	}
+//	private String buildJsonData(String user, String msg) {
+//
+//		JsonReader jsonReader = Json.createReader(new StringReader(msg));
+//		JsonObject jsonObj = jsonReader.readObject();
+//		jsonReader.close();
+//
+//		JsonObject jsonObject = Json.createObjectBuilder()
+//				.add("user", user)
+//				.add("x", jsonObj.getInt("x"))
+//				.add("y", jsonObj.getInt("y"))
+//				.add("angle", jsonObj.getInt("angle"))
+//				.build();
+//
+//		StringWriter stringWriter = new StringWriter();
+//		try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {jsonWriter.write(jsonObject);}
+//
+//		return stringWriter.toString();
+//	}
 
 	private void sendMessageToAll(String message, Session session) {
 		for(Session s : sessions){
