@@ -1,5 +1,9 @@
 var webSocket = (function() {  
+<<<<<<< HEAD
   var ip = "192.168.0.128";
+=======
+  var ip = "192.168.80.136";
+>>>>>>> 4b4b274e8b05d122a2837f53ed9048e874e17c04
   var connection;
   var user;
 
