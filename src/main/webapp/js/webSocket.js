@@ -1,15 +1,14 @@
 var webSocket = (function() {  
+<<<<<<< HEAD
   var ip = "192.168.1.44";
+=======
+  var ip = "192.168.0.128";
+>>>>>>> 326b9081413b1514400788338534249e2afba618
   var connection;
   var user;
-  var Methods = {
-    UpdateCoordinates: 'updateCoordinates',
-    BulletShot: 'bulletShot',
-    LightOnOff: 'lightOnOff'
-  }
 
   var sendMessage = function (message) {
-    message.data.user = user;
+    message.user = user;
     connection.send(JSON.stringify(message));
   };
 
@@ -22,7 +21,7 @@ var webSocket = (function() {
   };
 
   var init = function() {
-    connection = new WebSocket("ws://" + ip + ":8080/Mercantes-del-Karibe/wsServerEndpoint");
+    connection = new WebSocket("ws://" + ip + ":8080/MdK/wsServerEndpoint");
     connection.onerror = function(evt) {
       console.log(evt);
     };

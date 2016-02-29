@@ -1,5 +1,5 @@
 var map = (function  () {
-  var ny, mvd, caribbean, sea, mask, game;
+  var ny, mvd, sea, mask, game;
 
   var maskLightOn, maskLightOff;
 
@@ -8,6 +8,13 @@ var map = (function  () {
     yTopLeft: 0,
     xBottomRight: 5000,
     yBottomRight: 5000
+  };
+
+  // Generamos los limites de la zona de caribe, 
+  // El puerto de Mvd y NY son una 1/10 parte de la zona Caribe
+  var caribbean = { 
+    yTop: Math.floor(worldBounds.yBottomRight / 10),
+    yBottom: worldBounds.yBottomRight - Math.floor(worldBounds.yBottomRight / 10)
   };
 
   var generateSea = function() {
@@ -20,15 +27,10 @@ var map = (function  () {
 
   var generateCaribbean = function() {
     // Pinta la zona del caribe
-    caribbean = game.add.graphics(0, 0); 
-    caribbean.beginFill(0x2275D3);
-    caribbean.drawRect(worldBounds.xTopLeft, caribbean.yTop, worldBounds.xBottomRight, caribbean.yBottom - caribbean.yTop);
-    caribbean.endFill();
-
-    // Generamos los limites de la zona de caribe, 
-    // El puerto de Mvd y NY son una 1/10 parte de la zona Caribe
-    caribbean.yTop = Math.floor(worldBounds.yBottomRight / 10);
-    caribbean.yBottom = worldBounds.yBottomRight - Math.floor(worldBounds.yBottomRight / 10);
+    caribbeanPaint = game.add.graphics(0, 0); 
+    caribbeanPaint.beginFill(0x2275D3);
+    caribbeanPaint.drawRect(worldBounds.xTopLeft, caribbean.yTop, worldBounds.xBottomRight, caribbean.yBottom - caribbean.yTop);
+    caribbeanPaint.endFill();
   }
 
   var generateIslands = function(_admin) {
