@@ -88,5 +88,4 @@ public class MapService {
 		
 		return "success";
 	}
-
 }
