@@ -23,17 +23,7 @@ public class WebSocketServerEndpoint {
 	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 	private Connection con;
 	
-	public WebSocketServerEndpoint() {
-		String driver = "com.mysql.jdbc.Driver";
-		try {
-			Class.forName(driver);
-			String url = "jdbc:mysql://localhost:3306/mdk";
-			con = (Connection) DriverManager
-					.getConnection(url, "root", "toor");
-		} catch (ClassNotFoundException | SQLException e) {
-			DatabaseAccess.insertException(con, e);
-		}
-	}
+	public WebSocketServerEndpoint() {}
 	
 	@OnOpen
 	public void onOpen(Session session){
@@ -76,7 +66,7 @@ public class WebSocketServerEndpoint {
 					s.getBasicRemote().sendText(message);
 				}
 			} catch (IOException ex) {
-				DatabaseAccess.insertException(con, ex);
+				System.out.println(ex.getMessage());
 			}
 		}
 	}

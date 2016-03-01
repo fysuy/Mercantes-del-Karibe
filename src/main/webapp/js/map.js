@@ -34,51 +34,87 @@ var map = (function  () {
   }
 
   var generateIslands = function(_admin) {
-    var islands = [];
+    var island;
 
     caribbean.islands = game.add.group();
 
-    // Seteo un valor random con la cantidad de islas
-    var numberOfIslands = game.rnd.integerInRange(15, 30);
-    
-    var i = 0, x, y, width, height, island;
-
-    // Genero las islas
-    for (i; i < numberOfIslands; i++)
-    {
-      x = game.rnd.between(worldBounds.xBottomRight / numberOfIslands * i, 
-        worldBounds.xBottomRight / numberOfIslands * (i + 1));
-
-      y = game.rnd.between(caribbean.yTop, caribbean.yBottom)
-      
-      width = game.rnd.between(100, 400);
-      height = game.rnd.between(100, 400);
-
-      island = game.add.tileSprite(x, y, width, height, 'island');
-      
-      game.physics.arcade.enable(island);
-      island.body.immovable = true;
-      island.anchor.setTo(0.5, 0.5);
-      caribbean.islands.add(island);
-      
-      islands.push({
-        x: x,
-        y: y,
-        width: width,
-        height: height
-      });
-    }
-
     if (_admin) {
-      // Para el instalador que todo quede en http://localhost:8080/Mercantes-del-Karibe como base url 
-      // (cliente y servidor) en tonces es mas sencillo el string del post
-      $.post("http://192.168.1.46:8080/Mercantes-del-Karibe/rest/game/saveIslands", islands, function(response) {
-        console.log(response);
+      var islands = [];
+
+      // Seteo un valor random con la cantidad de islas
+      var numberOfIslands = game.rnd.integerInRange(15, 30);
+      
+      var i = 0, x, y, width, height;
+
+      // Genero las islas
+      for (i; i < numberOfIslands; i++)
+      {
+        x = game.rnd.between(worldBounds.xBottomRight / numberOfIslands * i, 
+          worldBounds.xBottomRight / numberOfIslands * (i + 1));
+
+        y = game.rnd.between(caribbean.yTop, caribbean.yBottom)
+        
+        width = game.rnd.between(100, 400);
+        height = game.rnd.between(100, 400);
+
+        island = game.add.tileSprite(x, y, width, height, 'island');
+        
+        game.physics.arcade.enable(island);
+        island.body.immovable = true;
+        island.anchor.setTo(0.5, 0.5);
+        caribbean.islands.add(island);
+        
+        islands.push({
+          x: x,
+          y: y,
+          width: width,
+          height: height
+        });
+      }
+
+      $.post("rest/map/islands/save", JSON.stringify(islands));
+
+    } else {
+      $.get("rest/map/islands", function(islands) {
+        $.each(islands, function(i, island) {
+          isl = game.add.tileSprite(island.x, island.y, island.width, island.height, 'island');
+          game.physics.arcade.enable(isl);
+          isl.body.immovable = true;
+          isl.anchor.setTo(0.5, 0.5);
+          caribbean.islands.add(isl);
+        });
       });
     }
   }
 
-  var generatePorts = function() {
+  var generatePorts = function(_admin) {
+    var deferred = $.Deferred();
+    var xNyPort, xMvdPort;
+
+    if (_admin) {
+      xNyPort = game.rnd.between(worldBounds.xTopLeft, worldBounds.xBottomRight - 440);
+      xMvdPort = game.rnd.between(worldBounds.xTopLeft + 440, worldBounds.xBottomRight);
+
+      var ports = [
+        { name: 'ny', x: xNyPort },
+        { name: 'mvd', x: xMvdPort }
+      ];
+
+      $.post("rest/map/ports/save", JSON.stringify(ports));
+      deferred.resolve(xNyPort, xMvdPort);
+    } else {
+      $.get("rest/map/ports", function(ports) {
+        $.each(ports, function(i, port) {
+          switch(port.name) {
+            case 'ny': xNyPort = port.x; break;
+            case 'mvd': xMvdPort = port.x; break;
+          }
+        });
+
+        deferred.resolve(xNyPort, xMvdPort);
+      });
+    }
+
     ny = {}, mvd = {};
 
     // Creo la costa de Montevideo
@@ -103,12 +139,6 @@ var map = (function  () {
     ny.land.line.drawRect(worldBounds.xTopLeft, worldBounds.yTopLeft + 129, worldBounds.xBottomRight, 6);
     ny.land.line.endFill();
 
-    // Dibujo el puerto de new york
-    ny.port = game.add.sprite(game.rnd.between(worldBounds.xTopLeft, worldBounds.xBottomRight - 440), 0, 'port');
-    game.physics.enable(ny.port, Phaser.Physics.ARCADE);
-    ny.port.body.setSize(400, 60, 20, 135);
-    ny.port.body.immovable = true;
-
     // Pinta la tierra de montevideo
     mvd.land = game.add.tileSprite(worldBounds.xTopLeft, worldBounds.yBottomRight - 129, worldBounds.xBottomRight, 129, 'land');
     game.physics.enable(mvd.land, Phaser.Physics.ARCADE);
@@ -121,9 +151,20 @@ var map = (function  () {
     mvd.land.line.drawRect(worldBounds.xTopLeft, worldBounds.yBottomRight - 135, worldBounds.xBottomRight, 6);
     mvd.land.line.endFill();
 
-    // Dibujo el puerto de montevideo
-    mvd.port = game.add.sprite(game.rnd.between(worldBounds.xTopLeft + 440, worldBounds.xBottomRight), worldBounds.yBottomRight, 'port');
-    mvd.port.angle = 180;
+    deferred.done(function(xNyPort, xMvdPort) {
+      // Dibujo el puerto de new york
+      ny.port = game.add.sprite(xNyPort, 0, 'port');
+      game.physics.enable(ny.port, Phaser.Physics.ARCADE);
+      ny.port.body.setSize(400, 60, 20, 135);
+      ny.port.body.immovable = true;
+
+      // Dibujo el puerto de montevideo
+      mvd.port = game.add.sprite(xMvdPort, worldBounds.yBottomRight, 'port');
+      mvd.port.angle = 180;
+      game.physics.enable(mvd.port, Phaser.Physics.ARCADE);
+      mvd.port.body.setSize(400, 60, 20, 135);
+      mvd.port.body.immovable = true;
+    });   
   };
 
   var generateMask = function(_ship) {
@@ -154,7 +195,7 @@ var map = (function  () {
     generateSea();
     generateCaribbean();
     generateIslands(_admin);
-    generatePorts();
+    generatePorts(_admin);
   };
 
   // Selectoras para los objetos

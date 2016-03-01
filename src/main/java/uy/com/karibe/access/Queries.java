@@ -16,8 +16,23 @@ public class Queries {
 		return s;
 	}
 	
+	public static String deletePorts() {
+		String s = "delete from mdk.ports";
+		return s;
+	}
+	
 	public static String selectIslands() {
 		String s = "select * from mdk.islands";
+		return s;
+	}
+	
+	public static String insertPort() {
+		String s = "insert into mdk.ports(name, x) values (?, ?)";
+		return s;
+	}
+	
+	public static String selectPorts() {
+		String s = "select * from mdk.ports";
 		return s;
 	}
 }
