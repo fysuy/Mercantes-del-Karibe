@@ -93,7 +93,6 @@ var ships = (function() {
       this.el.health -= 2;
     }
     if (this.el.health <= 0) {
-      this.el.alive = false;
       this.el.kill();
       return true;
     }
@@ -121,6 +120,7 @@ var ships = (function() {
 
     // Propiedades del barco azul
     if (this.el.type == ShipsType.Blue) {
+
       // Creo la bala izquierda
       this.bulletLeft = this.game.add.sprite(0, 0, 'bullet');
       this.bulletLeft.anchor.setTo(0.5, 0.5);
@@ -201,7 +201,9 @@ var ships = (function() {
   }
 
   CargoBoat.prototype.fireBullet = function() {
-    if (this.el.alive) {          
+    if (this.el.alive) {
+      console.log("FIRE!");
+
       this.bulletLeft.reset(this.el.x, this.el.y);
       this.bulletRight.reset(this.el.x, this.el.y);
 
@@ -315,41 +317,41 @@ var ships = (function() {
       this.bullet.reset(this.el.x, this.el.y);
       this.bullet.rotation = this.el.rotation;
 
-          //  Disparo la bala considerando la direccion del barco
-          this.game.physics.arcade.velocityFromRotation(this.el.rotation, 500, this.bullet.body.velocity);
-          
-          var tween = this.game.add.tween(this.bullet).to(null, this.fireRateBullet, null, false, 0, 0, false);
-          
-          var bullet = this.bullet;
-          tween.onComplete.add(function() {
-            bullet.kill();
-          });
+      //  Disparo la bala considerando la direccion del barco
+      this.game.physics.arcade.velocityFromRotation(this.el.rotation, 500, this.bullet.body.velocity);
+      
+      var tween = this.game.add.tween(this.bullet).to(null, this.fireRateBullet, null, false, 0, 0, false);
+      
+      var bullet = this.bullet;
+      tween.onComplete.add(function() {
+        bullet.kill();
+      });
 
-          tween.start();
-        }
-      }
+      tween.start();
+    }
+  }
 
-      Submarine.prototype.fireMissile = function() {
+  Submarine.prototype.fireMissile = function() {
 
-        if (this.el.alive) {
+    if (this.el.alive) {
       // Verifico que el submarino siga vivo
 
       this.missile.reset(this.el.x, this.el.y);
       this.missile.rotation = this.el.rotation;
 
-          //  Disparo el misil en la direccion del barco
-          this.game.physics.arcade.velocityFromRotation(this.el.rotation, 500, this.missile.body.velocity);
-          
-          var tween = this.game.add.tween(this.missile).to(null, 500, null, false, 0, 0, false);
-          
-          var missile = this.missile;
-          tween.onComplete.add(function() {
-            missile.kill();
-          });
+      //  Disparo el misil en la direccion del barco
+      this.game.physics.arcade.velocityFromRotation(this.el.rotation, 500, this.missile.body.velocity);
+      
+      var tween = this.game.add.tween(this.missile).to(null, 500, null, false, 0, 0, false);
+      
+      var missile = this.missile;
+      tween.onComplete.add(function() {
+        missile.kill();
+      });
 
-          tween.start();
-        }
-      }
+      tween.start();
+    }
+  }
 
   // Variables de los barcos
   var submarine, blue, green, game;

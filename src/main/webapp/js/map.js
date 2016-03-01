@@ -137,9 +137,15 @@ var map = (function  () {
 
     // Dibujo la linea del borde
     ny.land.line = game.add.graphics(0, 0); 
-    ny.land.line.beginFill(0xE3F89A);
+    ny.land.line.beginFill(0x676767);
     ny.land.line.drawRect(worldBounds.xTopLeft, worldBounds.yTopLeft + 129, worldBounds.xBottomRight, 6);
     ny.land.line.endFill();
+    // Dibujo la linea del borde
+    ny.land.line2 = game.add.graphics(0, 0); 
+    ny.land.line2.beginFill(0x000000);
+    ny.land.line2.drawRect(worldBounds.xTopLeft, worldBounds.yTopLeft + 135, worldBounds.xBottomRight, 12);
+    ny.land.line2.endFill();
+    ny.land.line2.alpha = 0.1;
 
     // Pinta la tierra de montevideo
     mvd.land = game.add.tileSprite(worldBounds.xTopLeft, worldBounds.yBottomRight - 129, worldBounds.xBottomRight, 129, 'land');
@@ -149,9 +155,15 @@ var map = (function  () {
 
     // Dibujo la linea del borde
     mvd.land.line = game.add.graphics(0, 0); 
-    mvd.land.line.beginFill(0xE3F89A);
+    mvd.land.line.beginFill(0x676767);
     mvd.land.line.drawRect(worldBounds.xTopLeft, worldBounds.yBottomRight - 135, worldBounds.xBottomRight, 6);
     mvd.land.line.endFill();
+    // Dibujo la linea del borde
+    mvd.land.line2 = game.add.graphics(0, 0); 
+    mvd.land.line2.beginFill(0x000000);
+    mvd.land.line2.drawRect(worldBounds.xTopLeft, worldBounds.yTopLeft - 147, worldBounds.xBottomRight, 12);
+    mvd.land.line2.endFill();
+    mvd.land.line2.alpha = 0.1;
 
     deferred.done(function(xNyPort, xMvdPort) {
       // Dibujo el puerto de new york
