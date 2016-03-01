@@ -39,48 +39,49 @@ var ships = (function() {
       }
     },
     update: function(cursors) {
-
-      if (cursors) {
-        if (cursors.left.isDown)
-        {
-          this.el.body.rotation -= 4;
+      if (this.el.alive) {
+        if (cursors) {
+          if (cursors.left.isDown)
+          {
+            this.el.body.rotation -= 4;
+          }
+          else if (cursors.right.isDown)
+          {
+            this.el.body.rotation += 4;
+          }
+          else if (cursors.up.isDown)
+          {
+            this.el.currentSpeed = 300;
+          }
         }
-        else if (cursors.right.isDown)
-        {
-          this.el.body.rotation += 4;
-        }
-        else if (cursors.up.isDown)
-        {
-          this.el.currentSpeed = 300;
-        }
-      }
 
-      if(this.el.currentSpeed == 0) {
-        this.el.body.velocity.x = 0;
-        this.el.body.velocity.y = 0;
-      }
-
-      if (this.el.currentSpeed >= 0)
-      {        
-        this.dx = Math.ceil(this.el.x);
-        this.dy = Math.ceil(this.el.y);
-        this.dRotation = Math.ceil(this.el.rotation);
-
-        if (this.el.currentSpeed > 0) {
-          this.el.currentSpeed -= 5;
-          this.game.physics.arcade.velocityFromRotation(this.el.rotation, this.el.currentSpeed, this.el.body.velocity);
+        if(this.el.currentSpeed == 0) {
+          this.el.body.velocity.x = 0;
+          this.el.body.velocity.y = 0;
         }
-      }
 
-      if (this.hasMoved && this.allowSend)  {
-        var message = {
-          id: WebSocketIDs.UpdateCoordinates,
-          x: this.el.x,
-          y: this.el.y,
-          rotation: this.el.rotation
+        if (this.el.currentSpeed >= 0)
+        {        
+          this.dx = Math.ceil(this.el.x);
+          this.dy = Math.ceil(this.el.y);
+          this.dRotation = Math.ceil(this.el.rotation);
+
+          if (this.el.currentSpeed > 0) {
+            this.el.currentSpeed -= 5;
+            this.game.physics.arcade.velocityFromRotation(this.el.rotation, this.el.currentSpeed, this.el.body.velocity);
+          }
         }
-        webSocket.sendMessage(message);
-        this.allowSend = false;
+
+        if (this.hasMoved && this.allowSend)  {
+          var message = {
+            id: WebSocketIDs.UpdateCoordinates,
+            x: this.el.x,
+            y: this.el.y,
+            rotation: this.el.rotation
+          };
+          webSocket.sendMessage(message);
+          this.allowSend = false;
+        }
       }
     }
   }
@@ -188,14 +189,14 @@ var ships = (function() {
     var message = {
       id: WebSocketIDs.LightOnOff,
       value: this.light
-    }
+    };
     webSocket.sendMessage(message);
   }
 
   CargoBoat.prototype.updateBulletShot = function() {
     var message = {
       id: WebSocketIDs.BulletShotDouble
-    }
+    };
     webSocket.sendMessage(message);
   }
 
@@ -296,14 +297,14 @@ var ships = (function() {
   Submarine.prototype.updateBulletShot = function() {
     var message = {
       id: WebSocketIDs.BulletShot
-    }
+    };
     webSocket.sendMessage(message);
   }
 
   Submarine.prototype.updateMissileShot = function() {
     var message = {
       id: WebSocketIDs.MissileShot
-    }
+    };
     webSocket.sendMessage(message);
   }
 

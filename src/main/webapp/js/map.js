@@ -19,17 +19,19 @@ var map = (function  () {
 
   var generateSea = function() {
     // Creo el mar y le seteamos el color de fondo
-    sea = game.add.graphics(0, 0); 
-    sea.beginFill(0x2c8af4);
-    sea.drawRect(worldBounds.xTopLeft, worldBounds.yTopLeft, worldBounds.xBottomRight, worldBounds.yBottomRight);
-    sea.endFill();
+    sea = game.add.tileSprite(worldBounds.xTopLeft, 
+                              worldBounds.yTopLeft, 
+                              worldBounds.xBottomRight, 
+                              worldBounds.yBottomRight, 
+                              'water'); 
   };
 
   var generateCaribbean = function() {
     // Pinta la zona del caribe
     caribbeanPaint = game.add.graphics(0, 0); 
-    caribbeanPaint.beginFill(0x2275D3);
+    caribbeanPaint.beginFill(0x000000);
     caribbeanPaint.drawRect(worldBounds.xTopLeft, caribbean.yTop, worldBounds.xBottomRight, caribbean.yBottom - caribbean.yTop);
+    caribbeanPaint.alpha = 0.1;
     caribbeanPaint.endFill();
   }
 
