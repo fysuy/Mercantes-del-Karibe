@@ -10,7 +10,7 @@ public class Island {
 		this.x = x;
 		this.y = y;
 		this.width = width;
-		this.height = x;
+		this.height = height;
 	}
 	
 	public int getX() {

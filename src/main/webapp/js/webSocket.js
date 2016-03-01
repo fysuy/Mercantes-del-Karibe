@@ -1,5 +1,6 @@
 var webSocket = (function() {  
-  var ip = "192.168.0.128";
+  var ip = "192.168.1.44";
+
   var connection;
   var user;
 
@@ -17,7 +18,7 @@ var webSocket = (function() {
   };
 
   var init = function() {
-    connection = new WebSocket("ws://" + ip + ":8080/MdK/wsServerEndpoint");
+    connection = new WebSocket("ws://" + ip + ":8080/Mercantes-del-Karibe/wsServerEndpoint");
     connection.onerror = function(evt) {
       console.log(evt);
     };

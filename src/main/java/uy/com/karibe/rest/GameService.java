@@ -14,7 +14,7 @@ public class GameService extends Application {
 	public Set<Class<?>> getClasses( )
 	{
 		final Set<Class<?>> returnValue = new HashSet<Class<?>>( );
-		returnValue.add(IslandService.class);
+		returnValue.add(MapService.class);
 		return returnValue;
 	}
 }
