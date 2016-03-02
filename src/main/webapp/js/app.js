@@ -98,8 +98,12 @@ var app = (function  () {
         var jsonMsg = JSON.parse(msg.data);
 
         if (jsonMsg.id == "setRole") {
-          shipType = jsonMsg.message;
-          webSocket.setUser(shipType);
+          if (!shipType) {
+            shipType = jsonMsg.message;
+            webSocket.setUser(nickname, shipType);  
+          } else {
+            addPlayer(jsonMsg.name);
+          }
         }
 
         if (jsonMsg.id == "initGame") {

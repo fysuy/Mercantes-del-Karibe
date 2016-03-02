@@ -1,5 +1,5 @@
 var webSocket = (function() {  
-  var ip = "192.168.1.44";
+  var ip = "172.20.10.6";
 
   var connection;
   var user;
@@ -9,8 +9,17 @@ var webSocket = (function() {
     connection.send(JSON.stringify(message));
   };
 
-  var setUser = function (name) {
-    user = name;
+  var setUser = function (name, shipType) {
+    // el user guarda el tipo de barco no el nickname
+    user = shipType;
+
+    var msg = {
+      id: "setRole",
+      name: name,
+      role: shipType 
+    };
+
+    connection.send(JSON.stringify(msg));
   };
 
   var setOnMessage = function (fn) {
