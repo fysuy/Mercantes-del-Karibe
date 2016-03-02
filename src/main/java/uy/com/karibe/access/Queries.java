@@ -21,8 +21,8 @@ public class Queries {
 		return s;
 	}
 	
-	public static String selectIslands() {
-		String s = "select * from mdk.islands";
+	public static String deleteShips() {
+		String s = "delete from mdk.ships";
 		return s;
 	}
 	
@@ -31,8 +31,23 @@ public class Queries {
 		return s;
 	}
 	
+	public static String insertShip() {
+		String s = "insert into mdk.ships(name, x, y, rotation, health) values (?, ?, ?, ?, ?)";
+		return s;
+	}
+	
 	public static String selectPorts() {
 		String s = "select * from mdk.ports";
+		return s;
+	}
+	
+	public static String selectIslands() {
+		String s = "select * from mdk.islands";
+		return s;
+	}
+	
+	public static String selectShips() {
+		String s = "select * from mdk.ships";
 		return s;
 	}
 }

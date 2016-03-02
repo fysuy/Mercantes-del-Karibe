@@ -1,10 +1,11 @@
 package uy.com.karibe.websocket;
 
 import java.io.IOException;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import javax.websocket.OnClose;
@@ -13,26 +14,40 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import com.mysql.jdbc.Connection;
-
-import uy.com.karibe.access.DatabaseAccess;
-
 @ServerEndpoint("/wsServerEndpoint")
 public class WebSocketServerEndpoint {
 
 	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
-	private Connection con;
+	private static final ArrayList<String> roles = new ArrayList<String>(){{
+		add("submarine");
+		add("blue");
+		add("green");
+	}};
+	private static final HashMap<String, String> players = new HashMap<String, String>();
 	
 	public WebSocketServerEndpoint() {}
 	
 	@OnOpen
 	public void onOpen(Session session){
-		sessions.add(session);
+		try {
+			sessions.add(session);
+			Random random = new Random();
+			int rnd = random.nextInt(roles.size() - 1);
+			String role = roles.get(rnd);
+			players.put(session.getId(), role);
+			roles.remove(rnd);
+			session.getBasicRemote().sendText(role);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@OnClose
 	public void onClose(Session session){
 		sessions.remove(session);
+		String role = (String)players.get(session.getId());
+		players.remove(session.getId());
+		roles.add(role);
 	}
 
 	@OnMessage

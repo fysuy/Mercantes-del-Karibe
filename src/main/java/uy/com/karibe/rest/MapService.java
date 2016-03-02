@@ -31,7 +31,7 @@ public class MapService {
 			con = (Connection) DriverManager
 					.getConnection(url, "root", "toor");
 		} catch (ClassNotFoundException | SQLException e) {
-			DatabaseAccess.insertException(con, e);
+			System.out.println(e.getMessage());
 		}
 	}
 	

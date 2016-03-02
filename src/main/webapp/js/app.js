@@ -42,7 +42,7 @@ var Strings = {
   ShipKilledGreen: 'El carguero verde ha sido destruido.'
 }
 
-var wsCounter = 0;
+//var wsCounter = 0;
 
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
@@ -55,27 +55,64 @@ function getParameterByName(name, url) {
 }
 
 var app = (function  () {
-  var cursors,
+  var cursors, game,
     gameWidth = 800, 
     gameHeight = 600, 
     gameContainer = 'game-container',
     submarine, blue, green, ship,
     caribbean, ny, mvd, mask,
-    currentSpeed, 
+    currentSpeed, shipType,
     submarineState = ShipStates.Alive, 
     blueState = ShipStates.Alive, 
     greenState = ShipStates.Alive;
 
-  var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, gameContainer, { 
-    preload: preload, 
-    create: create, 
-    update: update, 
-    render: render 
+  var addPlayer = function(name, role) {
+    $("#players-list").append("<li>" + name + "</li>");
+  }
+
+  $(document).ready(function() {
+    $(".insert-nickname").hide();
+    $(".select-sides").hide();
+
+    $(".button-play").click(function() {
+      $(".main-menu").hide();
+      $(".insert-nickname").show();
+    });
+
+    $(".button-prev").click(function() {
+      $(".main-menu").show();
+      $(".insert-nickname").hide();
+      $(".select-sides").hide();
+    });
+
+    $(".button-next").click(function() {
+      $(".main-menu").hide();
+      $(".insert-nickname").hide();
+      $(".select-sides").show();
+
+      var nickname = $("#insert-nickname").val();
+      addPlayer(nickname);
+      var connection = webSocket.init();
+
+      webSocket.setOnMessage(function(msg) {
+        shipType = msg.data;
+        init();
+      });
+
+      webSocket.setUser(shipType);
+    });
   });
 
-  function render() {
+  var init = function() {
+    game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, gameContainer, { 
+      preload: preload, 
+      create: create, 
+      update: update, 
+      render: render 
+    });
+  };
 
-  }
+  function render() {}
 
   function preload() 
   {
@@ -106,26 +143,25 @@ var app = (function  () {
     blue = ships.getBlue();
     green = ships.getGreen();
 
-    var shipType = getParameterByName("shipType");
-
+    //var shipType = getParameterByName("shipType");
 
     switch (shipType) {
       // Player submarino
       case ShipsType.Submarine:
         setPlayerShip(submarine);
-        webSocket.setUser(ShipsType.Submarine);
+        //webSocket.setUser(ShipsType.Submarine);
         break;
       
       // Player carguero azul
       case ShipsType.Blue:
         setPlayerShip(blue);
-        webSocket.setUser(ShipsType.Blue);
+        //webSocket.setUser(ShipsType.Blue);
         break;
       
       // Player carguero verde
       case ShipsType.Green:
         setPlayerShip(green);
-        webSocket.setUser(ShipsType.Green);
+        //webSocket.setUser(ShipsType.Green);
         break;
     }
 
@@ -578,7 +614,6 @@ var app = (function  () {
       game.debug.text('TERMINO EL JUEGO, DEJA DE HACER CAMBIOS SEBA', 32, 100, '#ffffff', '24px Arial');
       game.paused = true;
     }
-
   }
 
   var setPlayerShip = function(_ship) {
@@ -628,7 +663,6 @@ var app = (function  () {
       }; 
     }
     return message;
-
   }
 
 })();

@@ -1,5 +1,5 @@
 var webSocket = (function() {  
-  var ip = "192.168.0.128";
+  var ip = "192.168.1.44";
 
   var connection;
   var user;
@@ -22,16 +22,18 @@ var webSocket = (function() {
     connection.onerror = function(evt) {
       console.log(evt);
     };
+
     connection.onclose = function(evt) {
       console.log(evt);
     };
-  };
 
-  init();
+    return connection;
+  };
 
   return {
     sendMessage: sendMessage,
     setOnMessage : setOnMessage,
-    setUser: setUser
+    setUser: setUser, 
+    init: init
   }
 })();
