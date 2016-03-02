@@ -14,8 +14,20 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import com.google.gson.Gson;
+
 @ServerEndpoint("/wsServerEndpoint")
 public class WebSocketServerEndpoint {
+	
+	public class JsonMsg {
+		private String id;
+		private String message;
+		
+		public JsonMsg(String id, String message) {
+			this.id = id;
+			this.message = message;
+		}
+	}
 
 	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 	private static final ArrayList<String> roles = new ArrayList<String>(){{
@@ -30,13 +42,22 @@ public class WebSocketServerEndpoint {
 	@OnOpen
 	public void onOpen(Session session){
 		try {
-			sessions.add(session);
 			Random random = new Random();
-			int rnd = random.nextInt(roles.size() - 1);
+			int rnd = random.nextInt(roles.size());
 			String role = roles.get(rnd);
+			
+			sessions.add(session);
 			players.put(session.getId(), role);
 			roles.remove(rnd);
-			session.getBasicRemote().sendText(role);
+			
+			JsonMsg msg = new JsonMsg("setRole", role);
+			
+			session.getBasicRemote().sendText(new Gson().toJson(msg));
+			
+			if(roles.size() == 0) {
+				JsonMsg initMsg = new JsonMsg("initGame", "true");
+				sendMessageToAll(new Gson().toJson(initMsg), session, true);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -52,7 +73,7 @@ public class WebSocketServerEndpoint {
 
 	@OnMessage
 	public void onMessage(String message, Session session){
-		sendMessageToAll(message, session);
+		sendMessageToAll(message, session, false);
 	}
 
 //	private String buildJsonData(String user, String msg) {
@@ -74,10 +95,10 @@ public class WebSocketServerEndpoint {
 //		return stringWriter.toString();
 //	}
 
-	private void sendMessageToAll(String message, Session session) {
+	private void sendMessageToAll(String message, Session session, boolean includeSelf) {
 		for(Session s : sessions){
 			try {
-				if(s.getId() != session.getId()) {
+				if(s.getId() != session.getId() || includeSelf) {
 					s.getBasicRemote().sendText(message);
 				}
 			} catch (IOException ex) {

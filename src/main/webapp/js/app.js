@@ -95,11 +95,23 @@ var app = (function  () {
       var connection = webSocket.init();
 
       webSocket.setOnMessage(function(msg) {
-        shipType = msg.data;
-        init();
-      });
+        var jsonMsg = JSON.parse(msg.data);
 
-      webSocket.setUser(shipType);
+        if (jsonMsg.id == "setRole") {
+          shipType = jsonMsg.message;
+          webSocket.setUser(shipType);
+        }
+
+        if (jsonMsg.id == "initGame") {
+          if (shipType == ShipsType.Submarine) {
+            init();
+          } else {
+            setTimeout(function() {
+              init();
+            }, 1000);
+          }         
+        }
+      });
     });
   });
 
@@ -133,7 +145,7 @@ var app = (function  () {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     // Inicio todo lo relacionado al mapa del juego
-    var admin = getParameterByName("admin");
+    var admin = (shipType == ShipsType.Submarine);
     map.init(game, admin);
     
     // Inicio las naves
