@@ -21,85 +21,76 @@ public class WebSocketServerEndpoint {
 	
 	public class JsonMsg {
 		private String id;
+		private String name;
 		private String message;
 		
-		public JsonMsg(String id, String message) {
+		public JsonMsg(String id, String name, String message) {
 			this.id = id;
+			this.name = name;
 			this.message = message;
 		}
 	}
 
+	private final Object writeLock = new Object();
 	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 	private static final ArrayList<String> roles = new ArrayList<String>(){{
 		add("submarine");
 		add("blue");
 		add("green");
 	}};
-	private static final HashMap<String, String> players = new HashMap<String, String>();
+	
+	private static final HashMap<String, String> playersRoles = new HashMap<String, String>();
+	private static final HashMap<String, String> playersNames = new HashMap<String, String>();
 	
 	public WebSocketServerEndpoint() {}
 	
 	@OnOpen
-	public void onOpen(Session session){
-		try {
-			Random random = new Random();
-			int rnd = random.nextInt(roles.size());
-			String role = roles.get(rnd);
-			
-			sessions.add(session);
-			players.put(session.getId(), role);
-			roles.remove(rnd);
-			
-			JsonMsg msg = new JsonMsg("setRole", role);
-			
-			session.getBasicRemote().sendText(new Gson().toJson(msg));
-			
-			if(roles.size() == 0) {
-				JsonMsg initMsg = new JsonMsg("initGame", "true");
-				sendMessageToAll(new Gson().toJson(initMsg), session, true);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+	synchronized public void onOpen(Session session){
+		Random random = new Random();
+		int rnd = random.nextInt(roles.size());
+		String role = roles.get(rnd);
+		
+		sessions.add(session);
+		playersRoles.put(session.getId(), role);
+		roles.remove(rnd);
+		
+		JsonMsg msg = new JsonMsg("setRole", "", role);
+		
+		sendMessageToAll(new Gson().toJson(msg), session, true);
+		
+		if(roles.size() == 0) {
+			JsonMsg initMsg = new JsonMsg("initGame", "", "true");
+			sendMessageToAll(new Gson().toJson(initMsg), session, true);
 		}
 	}
 
 	@OnClose
-	public void onClose(Session session){
+	synchronized public void onClose(Session session){
 		sessions.remove(session);
-		String role = (String)players.get(session.getId());
-		players.remove(session.getId());
+		String role = (String)playersRoles.get(session.getId());
+		playersRoles.remove(session.getId());
+		playersNames.remove(session.getId());
 		roles.add(role);
 	}
 
 	@OnMessage
-	public void onMessage(String message, Session session){
+	synchronized public void onMessage(String message, Session session){
+		JsonMsg jsonMsg = new Gson().fromJson(message, JsonMsg.class);
+		
+		if(jsonMsg.id == "setRole") {
+			playersNames.put(session.getId(), jsonMsg.name);
+		}
+		
 		sendMessageToAll(message, session, false);
 	}
 
-//	private String buildJsonData(String user, String msg) {
-//
-//		JsonReader jsonReader = Json.createReader(new StringReader(msg));
-//		JsonObject jsonObj = jsonReader.readObject();
-//		jsonReader.close();
-//
-//		JsonObject jsonObject = Json.createObjectBuilder()
-//				.add("user", user)
-//				.add("x", jsonObj.getInt("x"))
-//				.add("y", jsonObj.getInt("y"))
-//				.add("angle", jsonObj.getInt("angle"))
-//				.build();
-//
-//		StringWriter stringWriter = new StringWriter();
-//		try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {jsonWriter.write(jsonObject);}
-//
-//		return stringWriter.toString();
-//	}
-
-	private void sendMessageToAll(String message, Session session, boolean includeSelf) {
+	synchronized private void sendMessageToAll(String message, Session session, boolean includeSelf) {
 		for(Session s : sessions){
 			try {
 				if(s.getId() != session.getId() || includeSelf) {
-					s.getBasicRemote().sendText(message);
+					synchronized (writeLock) {
+						s.getBasicRemote().sendText(message);	
+					}
 				}
 			} catch (IOException ex) {
 				System.out.println(ex.getMessage());

@@ -1,9 +1,6 @@
 var webSocket = (function() {  
-<<<<<<< HEAD
-  var ip = "192.168.0.128";
-=======
-  var ip = "192.168.80.136";
->>>>>>> 4b4b274e8b05d122a2837f53ed9048e874e17c04
+  var ip = "172.20.10.6";
+
   var connection;
   var user;
 
@@ -12,8 +9,17 @@ var webSocket = (function() {
     connection.send(JSON.stringify(message));
   };
 
-  var setUser = function (name) {
-    user = name;
+  var setUser = function (name, shipType) {
+    // el user guarda el tipo de barco no el nickname
+    user = shipType;
+
+    var msg = {
+      id: "setRole",
+      name: name,
+      role: shipType 
+    };
+
+    connection.send(JSON.stringify(msg));
   };
 
   var setOnMessage = function (fn) {
@@ -21,20 +27,22 @@ var webSocket = (function() {
   };
 
   var init = function() {
-    connection = new WebSocket("ws://" + ip + ":8080/MdK/wsServerEndpoint");
+    connection = new WebSocket("ws://" + ip + ":8080/Mercantes-del-Karibe/wsServerEndpoint");
     connection.onerror = function(evt) {
       console.log(evt);
     };
+
     connection.onclose = function(evt) {
       console.log(evt);
     };
-  };
 
-  init();
+    return connection;
+  };
 
   return {
     sendMessage: sendMessage,
     setOnMessage : setOnMessage,
-    setUser: setUser
+    setUser: setUser, 
+    init: init
   }
 })();
