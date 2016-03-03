@@ -67,7 +67,8 @@ var app = (function  () {
     greenState = ShipStates.Alive;
 
   var addPlayer = function(name, role) {
-    $("#players-list").append("<li>" + name + "</li>");
+    //$("#players-list").append("<li>" + name + "</li>");
+    $("#players-list").html(name);
   }
 
   $(document).ready(function() {
@@ -91,8 +92,20 @@ var app = (function  () {
       $(".select-sides").show();
 
       var nickname = $("#insert-nickname").val();
-      addPlayer(nickname);
+      //addPlayer(nickname);
       var connection = webSocket.init();
+
+      //Solicito los usuarios conectados
+      setTimeout(function() {
+                 var message = {
+          id: "getUsersConnected",
+          message: ""
+        }
+
+      webSocket.sendMessage(message);
+     }, 1000);
+     
+    
 
       webSocket.setOnMessage(function(msg) {
         var jsonMsg = JSON.parse(msg.data);
@@ -105,16 +118,21 @@ var app = (function  () {
             addPlayer(jsonMsg.name);
           }
         }
+        //Obtengo los usuarios conectados
+        if (jsonMsg.id == "getUsersConnected") {
+            addPlayer(jsonMsg.message);
+        }
 
         if (jsonMsg.id == "initGame") {
           if (shipType == ShipsType.Submarine) {
             init();
           } else {
             setTimeout(function() {
-              init();
-            }, 1000);
+              init(); //Comienzo Juego
+            }, 1000);     
           }         
         }
+
       });
     });
   });
@@ -126,6 +144,8 @@ var app = (function  () {
       update: update, 
       render: render 
     });
+    //Foco al juego
+    $("html, body").animate({ scrollTop: $(document).height() }, 1000);
   };
 
   function render() {}

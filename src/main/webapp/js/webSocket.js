@@ -1,5 +1,5 @@
 var webSocket = (function() {  
-  var ip = "172.20.10.6";
+  var ip = "localhost";
 
   var connection;
   var user;
