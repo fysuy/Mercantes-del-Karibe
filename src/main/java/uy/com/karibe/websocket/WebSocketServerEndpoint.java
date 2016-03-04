@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -15,24 +16,17 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+import uy.com.karibe.domain.JsonMsg;
 
 @ServerEndpoint("/wsServerEndpoint")
 public class WebSocketServerEndpoint {
 	
-	public class JsonMsg {
-		private String id;
-		private String name;
-		private String message;
-		
-		public JsonMsg(String id, String name, String message) {
-			this.id = id;
-			this.name = name;
-			this.message = message;
-		}
-	}
-
 	private final Object writeLock = new Object();
 	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
+	@SuppressWarnings("serial")
 	private static final ArrayList<String> roles = new ArrayList<String>(){{
 		add("submarine");
 		add("blue");
@@ -75,13 +69,32 @@ public class WebSocketServerEndpoint {
 
 	@OnMessage
 	synchronized public void onMessage(String message, Session session){
-		JsonMsg jsonMsg = new Gson().fromJson(message, JsonMsg.class);
+		Gson gson = new Gson();
+		//JsonMsg jsonMsg = new Gson().fromJson(message, JsonMsg.class);
+		JsonElement jsonElement = new JsonParser().parse(message);
+		String accion = jsonElement.getAsJsonObject().get("id").getAsString();
 		
-		if(jsonMsg.id == "setRole") {
-			playersNames.put(session.getId(), jsonMsg.name);
+		switch (accion) {
+		case "setRole":
+			JsonMsg jsonMsgRole = new Gson().fromJson(message, JsonMsg.class);
+			
+			playersNames.put(session.getId(), jsonMsgRole.getName());
+			sendMessageToAll(message, session, false);
+			break;
+		case "getUsersConnected":
+			JsonMsg jsonMsgUsers = new Gson().fromJson(message, JsonMsg.class);
+			String usersConnected="";
+			for (Map.Entry<String, String> entry : playersNames.entrySet())
+			{
+				usersConnected += "<li>" + entry.getValue()+ "</li>";			
+			}
+			jsonMsgUsers.setMessage(usersConnected);
+			sendMessageToAll(gson.toJson(jsonMsgUsers), session,true);
+		break;
+		default:
+			sendMessageToAll(message, session, false);
+			break;
 		}
-		
-		sendMessageToAll(message, session, false);
 	}
 
 	synchronized private void sendMessageToAll(String message, Session session, boolean includeSelf) {
