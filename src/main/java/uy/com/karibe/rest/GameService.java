@@ -8,13 +8,19 @@ import javax.ws.rs.core.Application;
 @ApplicationPath("/rest")
 public class GameService extends Application {
 	
+	// Esta es la clase de configuracion de jersey, en la cual 
+	// definimos las clases que implementaran los servicios.
+	
 	public GameService() {}
 	
+	// Agregamos al metodo que especifica jersey las clases que implementaran
+	// los servicios de la aplicacion.
 	@Override
 	public Set<Class<?>> getClasses( )
 	{
-		final Set<Class<?>> returnValue = new HashSet<Class<?>>( );
-		returnValue.add(MapService.class);
-		return returnValue;
+		final Set<Class<?>> services = new HashSet<Class<?>>( );
+		services.add(MapService.class);
+		services.add(ShipService.class);
+		return services;
 	}
 }

@@ -356,12 +356,61 @@ var ships = (function() {
   // Variables de los barcos
   var submarine, blue, green, game;
 
-  var init = function(_game) {
+  var init = function(_game, _admin) {
     game = _game;
 
-    submarine = new Submarine(game, ShipsType.Submarine, 100, 300);
-    blue = new CargoBoat(game, ShipsType.Blue, 200, 500);
-    green = new CargoBoat(game, ShipsType.Green, 300, 700);
+    var caribbean = map.getCaribbean();
+    var x, y;
+
+    x = game.rnd.between(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
+    y = game.rnd.between(caribbean.yTop, caribbean.yBottom);
+    submarine = new Submarine(game, ShipsType.Submarine, x, y);
+
+    blue = new CargoBoat(game, ShipsType.Blue, 500, 4700);
+    blue.el.visible = false;
+
+    green = new CargoBoat(game, ShipsType.Green, 700, 4700);
+    green.el.visible = false;
+
+    setTimeout(function() {
+      var mvd = map.getMvd();
+      blue.el.x = mvd.port.x - 100;
+      blue.el.y = mvd.port.y - 200;
+      blue.el.visible = true;
+
+      green.el.x = mvd.port.x - 300;
+      green.el.y = mvd.port.y - 200;
+      green.el.visible = true;
+    }, 1100);
+
+    if (_admin) {
+      var ships = [
+        { 
+          name: ShipsType.Submarine, 
+          x: submarine.el.x,  
+          y: submarine.el.y,
+          rotation: submarine.el.rotation,
+          health: submarine.el.health
+        },
+        {
+          name: ShipsType.Blue, 
+          x: blue.el.x,  
+          y: blue.el.y,
+          rotation: blue.el.rotation,
+          health: blue.el.health
+        },
+        {
+          name: ShipsType.Green, 
+          x: green.el.x,  
+          y: green.el.y,
+          rotation: green.el.rotation,
+          health: green.el.health
+        }
+      ];
+
+      $.post("rest/ships", JSON.stringify(ships));
+
+    }
   };
 
   var getSubmarine = function() {
