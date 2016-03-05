@@ -414,11 +414,11 @@ function update() {
   ny = map.getNY();
   mvd = map.getMvd();
     
-    //mask = ship.vision;
-    //game.world.mask = mask;
+    mask = ship.vision;
+    game.world.mask = mask;
 
-    //mask.x = ship.el.body.x + 36;
-    //mask.y = ship.el.body.y + 36;
+    mask.x = ship.el.body.x + 36;
+    mask.y = ship.el.body.y + 36;
 
     /* -------------------- */
     /* ---- COLISIONES ---- */
@@ -456,7 +456,7 @@ function update() {
 
       // Actualizo la luz del barco azul
       if (blue.light == false 
-        && game.physics.arcade.distanceBetween(submarine.el, blue.el) > 200) {
+        && game.physics.arcade.distanceBetween(submarine.el, blue.el) > 400) {
         blue.el.alpha = 0;
     } else {
       blue.el.alpha = 1;
@@ -464,7 +464,7 @@ function update() {
 
       // Actualizo la luz del barco verde
       if (green.light == false 
-        && game.physics.arcade.distanceBetween(submarine.el, green.el) > 200) {
+        && game.physics.arcade.distanceBetween(submarine.el, green.el) > 400) {
         green.el.alpha = 0;
     } else {
       green.el.alpha = 1;
