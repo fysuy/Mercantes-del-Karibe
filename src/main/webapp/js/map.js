@@ -74,7 +74,7 @@ var map = (function  () {
         });
       }
 
-      $.post("rest/map/islands/save", JSON.stringify(islands));
+      $.post("rest/map/islands", JSON.stringify(islands));
 
     } else {
       $.get("rest/map/islands", function(islands) {
@@ -102,7 +102,7 @@ var map = (function  () {
         { name: 'mvd', x: xMvdPort }
       ];
 
-      $.post("rest/map/ports/save", JSON.stringify(ports));
+      $.post("rest/map/ports", JSON.stringify(ports));
       deferred.resolve(xNyPort, xMvdPort);
     } else {
       $.get("rest/map/ports", function(ports) {
@@ -140,6 +140,7 @@ var map = (function  () {
     ny.land.line.beginFill(0x676767);
     ny.land.line.drawRect(worldBounds.xTopLeft, worldBounds.yTopLeft + 129, worldBounds.xBottomRight, 6);
     ny.land.line.endFill();
+
     // Dibujo la linea del borde
     ny.land.line2 = game.add.graphics(0, 0); 
     ny.land.line2.beginFill(0x000000);
@@ -158,6 +159,7 @@ var map = (function  () {
     mvd.land.line.beginFill(0x676767);
     mvd.land.line.drawRect(worldBounds.xTopLeft, worldBounds.yBottomRight - 135, worldBounds.xBottomRight, 6);
     mvd.land.line.endFill();
+
     // Dibujo la linea del borde
     mvd.land.line2 = game.add.graphics(0, 0); 
     mvd.land.line2.beginFill(0x000000);
@@ -197,8 +199,6 @@ var map = (function  () {
   };
 
   // Selectoras para los objetos
-
-
   var getCaribbean = function() { return caribbean; }
   var getNY = function() { return ny; }
   var getMvd = function() { return mvd; }

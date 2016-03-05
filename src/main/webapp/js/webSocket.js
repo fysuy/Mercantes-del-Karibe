@@ -9,8 +9,17 @@ var webSocket = (function() {
     connection.send(JSON.stringify(message));
   };
 
-  var setUser = function (name) {
-    user = name;
+  var setUser = function (name, shipType) {
+    // el user guarda el tipo de barco no el nickname
+    user = shipType;
+
+    var msg = {
+      id: "setRole",
+      name: name,
+      role: shipType 
+    };
+
+    connection.send(JSON.stringify(msg));
   };
 
   var setOnMessage = function (fn) {
@@ -22,16 +31,18 @@ var webSocket = (function() {
     connection.onerror = function(evt) {
       console.log(evt);
     };
+
     connection.onclose = function(evt) {
       console.log(evt);
     };
-  };
 
-  init();
+    return connection;
+  };
 
   return {
     sendMessage: sendMessage,
     setOnMessage : setOnMessage,
-    setUser: setUser
+    setUser: setUser, 
+    init: init
   }
 })();

@@ -43,40 +43,120 @@ var Strings = {
   ShipKilledGreen: 'El carguero verde ha sido destruido.'
 }
 
-var wsCounter = 0;
-
 function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+  results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 var height = $(window).height();
 var width = $(window).width();
 
 var app = (function  () {
-  var cursors,
+  var cursors, game,
     pauseButton,
-    gameWidth = 800, 
-    gameHeight = 600, 
-    gameContainer = 'game-container',
-    submarine, blue, green, ship,
-    caribbean, ny, mvd, mask,
-    currentSpeed;
+  gameWidth = 800, 
+  gameHeight = 600, 
+  gameContainer = 'game-container',
+  submarine, blue, green, ship,
+  caribbean, ny, mvd, mask,
+  currentSpeed, shipType;
 
-  var game = new Phaser.Game(width, height, Phaser.AUTO, gameContainer, { 
-    preload: preload, 
-    create: create, 
-    update: update, 
-    render: render 
+  var addPlayer = function(name, role) {
+    $("#players-list").html(name);
+  }
+
+  $(document).ready(function() {
+
+    $('body').keydown(function(e){
+      if(e.which === 13) {
+        var $btnNext = $(".button-next");
+        if ($btnNext) {
+          $btnNext.click();
+        }
+      }
+    });
+
+    $(".insert-nickname").hide();
+    $(".select-sides").hide();
+
+    $(".button-play").click(function() {
+      $(".main-menu").hide();
+      $(".insert-nickname")
+        .show()
+        .focus();
+    });
+
+    $(".button-prev").click(function() {
+      $(".main-menu").show();
+      $(".insert-nickname").hide();
+      $(".select-sides").hide();
+    });
+
+    $(".button-next").click(function() {
+      $(".main-menu").hide();
+      $(".insert-nickname").hide();
+      $(".select-sides").show();
+
+      var nickname = $("#insert-nickname").val();
+      var connection = webSocket.init();
+
+      //Solicito los usuarios conectados
+      setTimeout(function() {
+        var message = {
+          id: "getUsersConnected",
+          message: ""
+        }
+
+        webSocket.sendMessage(message);
+      }, 1000); 
+
+      webSocket.setOnMessage(function(msg) {
+        var jsonMsg = JSON.parse(msg.data);
+
+        if (jsonMsg.id == "setRole") {
+          if (!shipType) {
+            shipType = jsonMsg.message;
+            webSocket.setUser(nickname, shipType);  
+          } else {
+            addPlayer(jsonMsg.name);
+          }
+        }
+        
+        //Obtengo los usuarios conectados
+        if (jsonMsg.id == "getUsersConnected") {
+          addPlayer(jsonMsg.message);
+        }
+
+        if (jsonMsg.id == "initGame") {
+          if (shipType == ShipsType.Submarine) {
+            init();
+          } else {
+            setTimeout(function() {
+              init(); //Comienzo Juego
+            }, 2000);     
+          }         
+        }
+      });
+    });
   });
 
-  function render() {
+  var init = function() {
+    game = new Phaser.Game(width, height, Phaser.AUTO, gameContainer, { 
+      preload: preload, 
+      create: create, 
+      update: update, 
+      render: render 
+    });
+    //Foco al juego
+    $('#game-title').remove();
+    $('#players-list').remove();
+  };
 
-  }
+  function render() {}
 
   function preload() 
   {
@@ -97,36 +177,21 @@ var app = (function  () {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     // Inicio todo lo relacionado al mapa del juego
-    var admin = getParameterByName("admin");
+    var admin = (shipType == ShipsType.Submarine);
     map.init(game, admin);
     
     // Inicio las naves
-    ships.init(game);
+    ships.init(game, admin);
 
     submarine = ships.getSubmarine();
     blue = ships.getBlue();
     green = ships.getGreen();
 
-    var shipType = getParameterByName("shipType");
-
     switch (shipType) {
       // Player submarino
-      case ShipsType.Submarine:
-        setPlayerShip(submarine);
-        webSocket.setUser(ShipsType.Submarine);
-        break;
-      
-      // Player carguero azul
-      case ShipsType.Blue:
-        setPlayerShip(blue);
-        webSocket.setUser(ShipsType.Blue);
-        break;
-      
-      // Player carguero verde
-      case ShipsType.Green:
-        setPlayerShip(green);
-        webSocket.setUser(ShipsType.Green);
-        break;
+      case ShipsType.Submarine: setPlayerShip(submarine); break;
+      case ShipsType.Blue: setPlayerShip(blue); break;
+      case ShipsType.Green: setPlayerShip(green); break;
     }
 
     /* ------------- */
@@ -171,56 +236,56 @@ var app = (function  () {
 
           // Update de la posicion de los barcos
           case WebSocketIDs.UpdateCoordinates:
-            if (jsonMsg.user != ship.el.type) {
-              if (jsonMsg.user == ShipsType.Submarine) {
-                submarine.el.x = jsonMsg.x;
-                submarine.el.y = jsonMsg.y;
-                submarine.el.rotation = jsonMsg.rotation;
-              }
-
-              if (jsonMsg.user == ShipsType.Blue) {
-                blue.el.x = jsonMsg.x;
-                blue.el.y = jsonMsg.y;
-                blue.el.rotation = jsonMsg.rotation;
-              }
-
-              if (jsonMsg.user == ShipsType.Green) {
-                green.el.x = jsonMsg.x;
-                green.el.y = jsonMsg.y;
-                green.el.rotation = jsonMsg.rotation;
-              }
+          if (jsonMsg.user != ship.el.type) {
+            if (jsonMsg.user == ShipsType.Submarine) {
+              submarine.el.x = jsonMsg.x;
+              submarine.el.y = jsonMsg.y;
+              submarine.el.rotation = jsonMsg.rotation;
             }
-            break;
 
-          // Update de la luz
-          case WebSocketIDs.LightOnOff:
             if (jsonMsg.user == ShipsType.Blue) {
-              blue.light = jsonMsg.value;
+              blue.el.x = jsonMsg.x;
+              blue.el.y = jsonMsg.y;
+              blue.el.rotation = jsonMsg.rotation;
             }
 
             if (jsonMsg.user == ShipsType.Green) {
-              green.light = jsonMsg.value;
+              green.el.x = jsonMsg.x;
+              green.el.y = jsonMsg.y;
+              green.el.rotation = jsonMsg.rotation;
             }
-            break;
+          }
+          break;
+
+          // Update de la luz
+          case WebSocketIDs.LightOnOff:
+          if (jsonMsg.user == ShipsType.Blue) {
+            blue.light = jsonMsg.value;
+          }
+
+          if (jsonMsg.user == ShipsType.Green) {
+            green.light = jsonMsg.value;
+          }
+          break;
 
           // Update del disparo azul
           case WebSocketIDs.BulletShotDouble:
-            blue.fireBullet();
-            break;
+          blue.fireBullet();
+          break;
 
           // Update del disparo bala submarino
           case WebSocketIDs.BulletShot:
-            submarine.fireBullet();
-            break;
+          submarine.fireBullet();
+          break;
 
           // Update del misil submarino
           case WebSocketIDs.MissileShot:
-            submarine.fireMissile();
-            break;
+          submarine.fireMissile();
+          break;
 
           // Update carguero llega al puerto
           case WebSocketIDs.ShipArrived:
-            if (jsonMsg.ship == ShipsType.Blue) {
+          if (jsonMsg.ship == ShipsType.Blue) {
               // Azul llego a NY
               blue.el.kill();
               blue.state = ShipStates.Arrived;
@@ -243,25 +308,25 @@ var app = (function  () {
 
           // Update colision entre barcos
           case WebSocketIDs.ShipsCollided:
-            var shipOne = jsonMsg.shipOne;
-            var shipTwo = jsonMsg.shipTwo;
-            if ((shipOne == ShipsType.Submarine || shipTwo == ShipsType.Submarine)
-                  && (shipOne == ShipsType.Blue || shipTwo == ShipsType.Blue)) {
-              
-              // Submarino vs azul
-              submarine.el.kill();
-              submarine.state = ShipStates.Destroyed;
-              blue.el.kill();
-              blue.state = ShipStates.Destroyed;
-              if (ship.el.type == shipOne || ship.el.type == shipTwo) {
-                $('#hud #messages').text(Strings.PlayerCollided);
-              } else {
-                $('#hud #messages').text(Strings.CollisionSubmarineBlue);
-              }
+          var shipOne = jsonMsg.shipOne;
+          var shipTwo = jsonMsg.shipTwo;
+          if ((shipOne == ShipsType.Submarine || shipTwo == ShipsType.Submarine)
+            && (shipOne == ShipsType.Blue || shipTwo == ShipsType.Blue)) {
 
-            } else if ((shipOne == ShipsType.Submarine || shipTwo == ShipsType.Submarine)
-                        && (shipOne == ShipsType.Green || shipTwo == ShipsType.Green)) {
-              
+              // Submarino vs azul
+            submarine.el.kill();
+              submarine.state = ShipStates.Destroyed;
+            blue.el.kill();
+              blue.state = ShipStates.Destroyed;
+            if (ship.el.type == shipOne || ship.el.type == shipTwo) {
+                $('#hud #messages').text(Strings.PlayerCollided);
+            } else {
+                $('#hud #messages').text(Strings.CollisionSubmarineBlue);
+            }
+
+          } else if ((shipOne == ShipsType.Submarine || shipTwo == ShipsType.Submarine)
+            && (shipOne == ShipsType.Green || shipTwo == ShipsType.Green)) {
+
               // Submarino vs verde
               submarine.el.kill();
               submarine.state = ShipStates.Destroyed;
@@ -273,7 +338,7 @@ var app = (function  () {
                 $('#hud #messages').text(Strings.CollisionSubmarineGreen);
               }
             } else {
-              
+
               // Azul vs verde
               blue.el.kill();
               blue.state = ShipStates.Destroyed;
@@ -289,16 +354,16 @@ var app = (function  () {
 
           // Update barco disparado
           case WebSocketIDs.ShipShot:
-            switch (jsonMsg.ship) {
-              case ShipsType.Submarine: 
+          switch (jsonMsg.ship) {
+            case ShipsType.Submarine: 
                 var destroyed = submarine.damage(jsonMsg.ammo);
                 if (destroyed) {
                   $('#hud #messages').text(Strings.ShipKilledSubmarine);
                 }
-                submarine.el.kill();
+            submarine.el.kill();
                 $('#hud #messages').text(Strings.ShipKilledSubmarine);
-                break;
-              case ShipsType.Blue: 
+            break;
+            case ShipsType.Blue: 
                 var destroyed = blue.damage(jsonMsg.ammo);
                 if (destroyed) {
                   if (ship.el.type == ShipsType.Blue) {
@@ -306,10 +371,10 @@ var app = (function  () {
                   } else {
                     $('#hud #messages').text(Strings.ShipKilledBlue);
                   }
-                }
+            }
                 
-                break;
-              case ShipsType.Green: 
+            break;
+            case ShipsType.Green: 
                 var destroyed = green.damage(jsonMsg.ammo);
                 if (destroyed) {
                   if (ship.el.type == ShipsType.Green) {
@@ -317,10 +382,10 @@ var app = (function  () {
                   } else {
                     $('#hud #messages').text(Strings.ShipKilledGreen);
                   }
-                }
-                break;
             }
             break;
+          }
+          break;
 
           // Update fin del juego
           case WebSocketIDs.GameOver:
@@ -341,19 +406,19 @@ var app = (function  () {
         console.log(err);
       }   
     });
-  }
+}
 
 
-  function update() {
-    caribbean = map.getCaribbean();
-    ny = map.getNY();
-    mvd = map.getMvd();
+function update() {
+  caribbean = map.getCaribbean();
+  ny = map.getNY();
+  mvd = map.getMvd();
     
-    mask = ship.vision;
-    game.stage.mask = mask;
+    //mask = ship.vision;
+    //game.world.mask = mask;
 
-    mask.x = ship.el.body.x + 36;
-    mask.y = ship.el.body.y + 36;
+    //mask.x = ship.el.body.x + 36;
+    //mask.y = ship.el.body.y + 36;
 
     /* -------------------- */
     /* ---- COLISIONES ---- */
@@ -365,19 +430,19 @@ var app = (function  () {
     game.physics.arcade.collide([ny.land, mvd.land, caribbean.islands], 
       submarine.missile, function() {
         submarine.missile.kill();
-    });
+      });
     game.physics.arcade.collide([ny.land, mvd.land, caribbean.islands], 
       submarine.bullet, function() {
         submarine.bullet.kill();
-    });
+      });
     game.physics.arcade.collide([ny.land, mvd.land, caribbean.islands], 
       blue.bulletLeft, function() {
         blue.bulletLeft.kill();
-    });
+      });
     game.physics.arcade.collide([ny.land, mvd.land, caribbean.islands], 
       blue.bulletRight, function() {
         blue.bulletRight.kill();
-    });
+      });
 
     /* El jugador del submarino detecta las colisiones 
     y las envia al WS unicamente él para evitar mensajes repetidos */
@@ -393,17 +458,17 @@ var app = (function  () {
       if (blue.light == false 
         && game.physics.arcade.distanceBetween(submarine.el, blue.el) > 200) {
         blue.el.alpha = 0;
-      } else {
-        blue.el.alpha = 1;
-      }
+    } else {
+      blue.el.alpha = 1;
+    }
 
       // Actualizo la luz del barco verde
       if (green.light == false 
         && game.physics.arcade.distanceBetween(submarine.el, green.el) > 200) {
         green.el.alpha = 0;
-      } else {
-        green.el.alpha = 1;
-      } 
+    } else {
+      green.el.alpha = 1;
+    } 
 
       // Submarino vs azul
       game.physics.arcade.overlap(blue.el, submarine.el, function() {
@@ -635,7 +700,6 @@ var app = (function  () {
     }
 
     ship.update(cursors);
-
   }
 
   var setPlayerShip = function(_ship) {
@@ -772,41 +836,40 @@ var app = (function  () {
     if (blue.state == ShipStates.Arrived 
       && green.state == ShipStates.Arrived) {
       console.log('Llegaron los cargueros');
-        gameOver = true;
-        result = GameResults.Uruguay;
+    gameOver = true;
+    result = GameResults.Uruguay;
     } else if (submarine.state == ShipStates.Destroyed 
       && (blue.state == ShipStates.Alive || blue.state == ShipStates.Arrived) 
       && (green.state == ShipStates.Alive || green.state == ShipStates.Arrived)) {
       // Murio el submarino y los cargueros siguen vivos o llegaron
       console.log('Murio el submarino y los cargueros siguen vivos o llegaron');
-        gameOver = true;
-        result = GameResults.Uruguay;
+      gameOver = true;
+      result = GameResults.Uruguay;
     } else if (submarine.state == ShipStates.Alive 
       && blue.state == ShipStates.Destroyed  
       && green.state == ShipStates.Destroyed) {
       // Murieron los cargueros y el submarino sigue vivo
       console.log('Murieron los cargueros y el submarino sigue vivo');
-        gameOver = true;
-        result = GameResults.Nazis;
+      gameOver = true;
+      result = GameResults.Nazis;
     } else if (submarine.state == ShipStates.Destroyed 
       && (blue.state == ShipStates.Destroyed || green.state == ShipStates.Destroyed)) {
         // Murio el submarino y murio algun carguero
         console.log('Murio el submarino y murio algun carguero');
         gameOver = true;
         result = GameResults.Draw;
-    }
-    if (gameOver) {
-      console.log("RESULTADO: " + result);
-      message = {
-        id: WebSocketIDs.GameOver,
-        result: result,
+      }
+      if (gameOver) {
+        console.log("RESULTADO: " + result);
+        message = {
+          id: WebSocketIDs.GameOver,
+          result: result,
         submarine: submarine.state,
         blue: blue.state,
         green: green.state
-      }; 
+        }; 
+      }
+      return message;
     }
-    return message;
 
-  }
-
-})();
+  })();

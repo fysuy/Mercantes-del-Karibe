@@ -1,18 +1,65 @@
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/styles.css" rel="stylesheet">
-        <script type="text/javascript" src="js/jquery.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="js/phaser.min.js"></script>
-        <script type="text/javascript" src="js/webSocket.js"></script>
-        <script type="text/javascript" src="js/map.js"></script>
-        <script type="text/javascript" src="js/ships.js"></script>
-        <script type="text/javascript" src="js/app.js"></script>
-    </head>
-    <body>
-        <div class="row">
+<head>
+  <meta charset="UTF-8">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="js/phaser.min.js"></script>
+  <script type="text/javascript" src="js/webSocket.js"></script>
+  <script type="text/javascript" src="js/map.js"></script>
+  <script type="text/javascript" src="js/ships.js"></script>
+  <script type="text/javascript" src="js/app.js"></script>
+</head>
+<body>
+  <div id="game-title" class="row text-center">
+    <img src="assets/title-mdk.png" />
+  </div>
+
+  <div class="row main-menu">
+    <div class="col-xs-12">
+      <div class="text-center">
+        <a href="#" class="button-style button-fixed-size button-yellow button-play">
+          <p class="button-text">Jugar</p>
+        </a>
+      </div>
+      <div class="text-center">
+        <a href="#" class="button-style button-fixed-size button-locked">
+          <p class="button-text">Reanudar</p>
+        </a>
+      </div>
+      <div class="text-center">
+        <a href="help.html" class="button-style button-fixed-size button-yellow">
+          <p class="button-text">Ayuda</p>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row insert-nickname">
+    <div class="col-xs-12">
+      <label for="insert-nickname">Apodo</label>
+      <input type="text" name="insert-nickname" id="insert-nickname" class="text-frame text-black"/>
+    </div>
+    <div class="row col-xs-12 position-absolute bottom">
+      <a href="#" class="button-style button-content-size button-yellow button-bottom float-left">
+        <p class="button-text button-prev">Volver</p>
+      </a>
+      <a href="#" class="button-style button-content-size button-green button-bottom float-right">
+        <p class="button-text button-next">Siguiente</p>
+      </a>
+    </div>
+  </div>
+
+  <div class="row text-center select-sides">
+
+    <div class="col-xs-12">
+      <p>Jugadores conectados:</p>
+      <ul id="players-list" style="list-style: none;"></ul>
+    </div>
+  </div>
+
+  <div class="row">
             <div id="game-container">
                 
                 <!-- RUTA SEGURA -->

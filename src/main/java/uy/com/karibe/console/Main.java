@@ -1,3 +1,12 @@
+/*
+ * Main.java
+ *
+ * MDK 4.0.1 - Clase para crear BD.
+ *
+ * 05/03/2016
+ *
+ * Copyright Drintin© 2016
+ */
 package uy.com.karibe.console;
 
 import java.io.FileInputStream;
@@ -16,7 +25,7 @@ public class Main {
 		Connection con = null;
 		try {
 			Properties p = new Properties();
-			String nomArch = "src/main/resources/config.properties";
+			String nomArch = "src/main/resources/Config.properties";
 			p.load(new FileInputStream(nomArch));
 			String driver = p.getProperty("persistencia.driver");
 			String url = p.getProperty("persistencia.url");
@@ -52,6 +61,19 @@ public class Main {
 					+ " x INT NOT NULL)";
 
 			pstmt = (PreparedStatement) con.prepareStatement(ports);
+			pstmt.executeUpdate();
+			pstmt.close();
+			
+			/* creo la tabla de los puertos */
+			String ships = "CREATE TABLE mdk.ships "
+					+ "(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, "
+					+ " name varchar(50) NOT NULL, "
+					+ " x int NOT NULL, "
+					+ " y int NOT NULL, "
+					+ " rotation int NOT NULL, "
+					+ " health int NOT NULL)";
+
+			pstmt = (PreparedStatement) con.prepareStatement(ships);
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (FileNotFoundException e) {
