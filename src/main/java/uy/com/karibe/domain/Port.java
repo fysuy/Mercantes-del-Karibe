@@ -1,3 +1,12 @@
+/*
+ * Port.java
+ *
+ * MDK 4.0.1 - Clase utlizada para guardar la posicion de los puertos.
+ *
+ * 05/03/2016
+ *
+ * Copyright Drintin© 2016
+ */
 package uy.com.karibe.domain;
 
 public class Port {

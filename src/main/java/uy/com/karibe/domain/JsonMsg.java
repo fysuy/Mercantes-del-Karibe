@@ -1,3 +1,12 @@
+/*
+ * JsonMsg
+ *
+ * MDK 4.0.1 - Clase para interpretar Json recibido desde el cliente web.
+ *
+ * 05/03/2016
+ *
+ * Copyright Drintin© 2016
+ */
 package uy.com.karibe.domain;
 
 public class JsonMsg {
