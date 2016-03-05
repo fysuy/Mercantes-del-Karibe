@@ -181,22 +181,6 @@ var map = (function  () {
     });   
   };
 
-  var generateMask = function(_ship) {
-    // Genero una mascara y la aplico al world
-    // Esto determina la vision del barco
-    mask = game.add.graphics(0, 0);
-    mask.beginFill(0x000000);
-
-    switch(_ship.type) {
-      case ShipsType.Submarine: mask.drawCircle(0, 0, 800); break;
-      case ShipsType.Blue: mask.drawCircle(0, 0, 400); break;
-      case ShipsType.Green: mask.drawCircle(0, 0, 400); break;
-      default: mask.drawCircle(0, 0, 600); break;
-    }
-    
-    game.world.mask = mask;
-  };
-
   var init = function (_game, _admin) {
     game = _game;
 
@@ -218,15 +202,12 @@ var map = (function  () {
   var getCaribbean = function() { return caribbean; }
   var getNY = function() { return ny; }
   var getMvd = function() { return mvd; }
-  var getMask = function() { return mask; }
 
   return {
     init: init,
     worldBounds: worldBounds,
     getCaribbean: getCaribbean,
-    generateMask: generateMask,
     getNY: getNY,
-    getMvd: getMvd,
-    getMask: getMask
+    getMvd: getMvd
   }
 })();

@@ -94,6 +94,26 @@ html, body {
   padding-bottom: 40px;
 }
 
+#hud {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+}
+
+#hud #lives {
+  float: left;
+}
+
+#hud #messages {
+  display: inline-block;
+}
+
+#game-container {
+  overflow: hidden;
+}
+
 .button-style {
   border: 4px solid $color-black;
   margin: 10px auto;

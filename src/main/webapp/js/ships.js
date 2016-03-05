@@ -13,6 +13,8 @@ var ships = (function() {
     this.el.body.collideWorldBounds = true;
     this.el.health = 2;
 
+    this.state = ShipStates.Alive;
+
     this.el.type = type;
 
     this.timer = this.game.time.create(false);
@@ -94,6 +96,7 @@ var ships = (function() {
     }
     if (this.el.health <= 0) {
       this.el.kill();
+      this.state = ShipStates.Destroyed;
       return true;
     }
     return false;
@@ -202,7 +205,6 @@ var ships = (function() {
 
   CargoBoat.prototype.fireBullet = function() {
     if (this.el.alive) {
-      console.log("FIRE!");
 
       this.bulletLeft.reset(this.el.x, this.el.y);
       this.bulletRight.reset(this.el.x, this.el.y);
