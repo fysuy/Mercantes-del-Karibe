@@ -35,29 +35,6 @@ html, body {
     > .row {
     	margin: 0;
     }
-    
-    .svg-container {
-      border: 1px solid white;
-      display: block;
-      margin: 0 auto;
-      width: 50%;
-      height: 500px;
-      overflow: hidden;
-      
-      svg {
-        background-color: #2B8AF4;
-        .axis {
-          fill: #3895F4;
-          stroke: #3895F4;
-          stroke-width: 2;
-        }
-        .island {
-          fill: #A4ED60;
-          stroke: #A4ED60;
-        }
-      }  
-    }
-
   }
 }
 
@@ -127,7 +104,6 @@ a, a:hover, a:focus {
 p { 
   margin: 0; 
 }
-
 
 .col-centered {
     float: none;
