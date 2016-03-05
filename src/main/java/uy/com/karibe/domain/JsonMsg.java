@@ -1,5 +1,5 @@
 /*
- * JsonMsg
+ * JsonMsg.java
  *
  * MDK 4.0.1 - Clase para interpretar Json recibido desde el cliente web.
  *
