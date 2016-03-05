@@ -19,7 +19,7 @@ $color-yellow-dark: #EDB41A;
 $color-green: #7abf31;
 $color-green-dark: #6DAD2A;
 $color-grey: #d3d0c7;
-$color-black: #271f17;
+$color-black: #000000;
 
 html, body { 
   margin: 0;
@@ -94,6 +94,7 @@ html, body {
   padding-bottom: 40px;
 }
 
+
 #hud {
   position: absolute;
   width: 100%;
@@ -109,6 +110,34 @@ html, body {
 #hud #messages {
   display: inline-block;
 }
+
+#game-container {
+  overflow: hidden;
+}
+
+#safe-route-dialog, #menu-pause {
+  display: none;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+#safe-route-dialog {
+  padding: 60px;
+}
+
+#safe-route-dialog .text-frame #submarine-spotted {
+  font-size: 24px;
+}
+
+#safe-route-dialog .text-frame {
+  max-width: 840px;
+  margin: auto;
+}
+
+
 
 #game-container {
   overflow: hidden;

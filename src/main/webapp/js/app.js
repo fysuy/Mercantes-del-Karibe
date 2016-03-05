@@ -156,6 +156,9 @@ var app = (function  () {
     pauseButton = game.input.keyboard.addKey(Phaser.Keyboard.ESC);
     pauseButton.onDown.add(listenerPause, this);
 
+    // Muestro la ruta segura
+    showSafeRoute();
+
     /* ------------------------------------- */
     /* ---- COMPORTARMIENTO MENSAJES WS ---- */
     /* ------------------------------------- */
@@ -639,6 +642,56 @@ var app = (function  () {
     ship = _ship;
   };
 
+  var showSafeRoute = function() {
+    // Detecto donde se genero el submarino
+    var strSubmarineSpotted ;
+    var worldThird = map.worldBounds.xBottomRight;
+    if (submarine.el.x < worldThird) {
+      strSubmarineSpotted = 'oeste ';
+    } else if (submarine.el.x < worldThird * 2){
+      strSubmarineSpotted = 'central ';
+    } else {
+      strSubmarineSpotted = 'este ';
+    }
+
+    // Asigno una ruta segura
+    var strSafeRouteSide;
+    var rndRoute = game.rnd.integerInRange(0, 1);
+    if (strSubmarineSpotted == 'oeste ') {
+      // submarino en el oeste
+      if (rndRoute == 0) {
+        strSafeRouteSide = 'centro';
+      } else {
+        strSafeRouteSide = 'este';
+      }
+    } else if (strSubmarineSpotted == 'central ') {
+      // submarino en el centro
+      if (rndRoute == 0) {
+        strSafeRouteSide = 'oeste';
+      } else {
+        strSafeRouteSide = 'este';
+      }
+    } else {
+      // submarino en el este
+      if (rndRoute == 0) {
+        strSafeRouteSide = 'oeste';
+      } else {
+        strSafeRouteSide = 'centro';
+      }
+    }
+
+    // creo el texto de la ruta segura
+    var strSafeRoute = 'Capitan, hemos detectado un submarino enemigo en la zona ';
+    strSafeRoute += strSubmarineSpotted;
+    strSafeRoute += ' del Caribe. Tome precauciones y evitelo navegando por el ';
+    // muestro el dialog de la ruta segura
+    if (ship.el.type == ShipsType.Blue || ship.el.type == ShipsType.Green) {
+      $('div#safe-route-dialog').css('display', 'inherit');
+      $('div#safe-route-dialog #submarine-spotted').text(strSafeRoute);
+      $('div#safe-route-dialog #safe-route').text(strSafeRouteSide);
+    }
+  }
+
   var updateLivesImage = function() {
     // Obtengo el estado del barco
     var shipState;
@@ -674,7 +727,8 @@ var app = (function  () {
   function togglePause(shipType) {
     console.log('togglePause antes ' + shipType + ' ' + game.paused);
     var strPlayer;
-      game.paused = (game.paused) ? false : true;
+    
+    game.paused = (game.paused) ? false : true;
     if (shipType == ship.el.type) {
 
       var message = {
@@ -697,10 +751,11 @@ var app = (function  () {
           strPlayer = 'carguero verde';
           break;
       }
-      $('#hud #messages').text('Juego pausado por el ' + strPlayer);
+      $('#menu-pause').css('display', 'inherit');
+      $('#menu-pause #paused-by').text('Juego pausado por el ' + strPlayer);
     } else {
-      $('#hud #messages').text('');
-    }
+      $('#menu-pause').css('display', 'none');
+    } 
   }
 
   function toggleGameOver() {

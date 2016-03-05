@@ -184,7 +184,7 @@ var map = (function  () {
   var init = function (_game, _admin) {
     game = _game;
 
-    game.stage.backgroundColor = '#000000';
+    game.stage.backgroundColor = '#0F3763';
     game.world.setBounds(0, 0, worldBounds.xBottomRight, worldBounds.yBottomRight);
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
