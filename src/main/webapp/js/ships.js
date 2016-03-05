@@ -53,7 +53,7 @@ var ships = (function() {
           }
           else if (cursors.up.isDown)
           {
-            if (this.el.type == ShipsType.submarine) {
+            if (this.el.type == ShipsType.Submarine) {
               this.el.currentSpeed = 300;
             } else {
               this.el.currentSpeed = 150;

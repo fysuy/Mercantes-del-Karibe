@@ -754,6 +754,12 @@ function update() {
       $('div#safe-route-dialog #submarine-spotted').text(strSafeRoute);
       $('div#safe-route-dialog #safe-route').text(strSafeRouteSide);
     }
+
+    // Cerrar dialog
+    $('div#safe-route-dialog #button-close-safe-route').click(function() {
+      $('div#safe-route-dialog').css('display', 'none');
+    });
+
   }
 
   var updateLivesImage = function() {
