@@ -26,11 +26,11 @@ public class ShipService {
 		String driver = "com.mysql.jdbc.Driver";
 		try {
 			Class.forName(driver);
-			String url = "jdbc:mysql://192.168.1.109:3306/mdk";
+			String url = "jdbc:mysql://localhost:3306/mdk";
 			con = (Connection) DriverManager
 					.getConnection(url, "root", "toor");
 		} catch (ClassNotFoundException | SQLException e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	
@@ -43,7 +43,6 @@ public class ShipService {
 	
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
-	//@Path("/save")
 	public String saveShips(String jsonShips) {	
 		try {
 			Ship[] ships = new Gson().fromJson(jsonShips, Ship[].class);
@@ -54,6 +53,7 @@ public class ShipService {
 				DatabaseAccess.insertShip(con, ship);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return e.getMessage();
 		}
 		
