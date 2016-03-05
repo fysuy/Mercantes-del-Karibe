@@ -1,3 +1,12 @@
+/*
+ * Main.java
+ *
+ * MDK 4.0.1 - Clase para crear BD.
+ *
+ * 05/03/2016
+ *
+ * Copyright Drintin© 2016
+ */
 package uy.com.karibe.console;
 
 import java.io.FileInputStream;

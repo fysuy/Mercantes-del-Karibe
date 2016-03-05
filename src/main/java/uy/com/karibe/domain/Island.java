@@ -1,3 +1,12 @@
+/*
+ * Island.java
+ *
+ * MDK 4.0.1 - Clase de la entidad isla.
+ *
+ * 05/03/2016
+ *
+ * Copyright Drintin© 2016
+ */
 package uy.com.karibe.domain;
 
 public class Island {
