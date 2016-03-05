@@ -6,8 +6,8 @@ var map = (function  () {
   var worldBounds = { 
     xTopLeft: 0,
     yTopLeft: 0,
-    xBottomRight: 5000,
-    yBottomRight: 5000
+    xBottomRight: 3000,
+    yBottomRight: 7000
   };
 
   // Generamos los limites de la zona de caribe, 
@@ -44,7 +44,7 @@ var map = (function  () {
       var islands = [];
 
       // Seteo un valor random con la cantidad de islas
-      var numberOfIslands = game.rnd.integerInRange(15, 30);
+      var numberOfIslands = game.rnd.integerInRange(25, 40);
       
       var i = 0, x, y, width, height;
 

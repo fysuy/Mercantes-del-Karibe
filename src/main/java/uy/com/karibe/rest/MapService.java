@@ -27,11 +27,11 @@ public class MapService {
 		String driver = "com.mysql.jdbc.Driver";
 		try {
 			Class.forName(driver);
-			String url = "jdbc:mysql://192.168.1.109:3306/mdk";
+			String url = "jdbc:mysql://localhost:3306/mdk";
 			con = (Connection) DriverManager
 					.getConnection(url, "root", "toor");
 		} catch (ClassNotFoundException | SQLException e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	
@@ -64,6 +64,7 @@ public class MapService {
 				DatabaseAccess.insertIsland(con, island);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return e.getMessage();
 		}
 		
@@ -83,6 +84,7 @@ public class MapService {
 				DatabaseAccess.insertPort(con, p);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return e.getMessage();
 		}
 		

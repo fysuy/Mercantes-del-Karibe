@@ -391,33 +391,44 @@ var ships = (function() {
     }, 5000);
 
     if (_admin) {
-      var ships = [
-        { 
-          name: ShipsType.Submarine, 
-          x: submarine.el.x,  
-          y: submarine.el.y,
-          rotation: submarine.el.rotation,
-          health: submarine.el.health
-        },
-        {
-          name: ShipsType.Blue, 
-          x: blue.el.x,  
-          y: blue.el.y,
-          rotation: blue.el.rotation,
-          health: blue.el.health
-        },
-        {
-          name: ShipsType.Green, 
-          x: green.el.x,  
-          y: green.el.y,
-          rotation: green.el.rotation,
-          health: green.el.health
-        }
-      ];
-
-      $.post("rest/ships", JSON.stringify(ships));
-
+      saveShips();
     }
+  };
+
+  var saveShips = function(showSuccess) {
+    var ships = [
+      { 
+        name: ShipsType.Submarine, 
+        x: Math.floor(submarine.el.x),  
+        y: Math.floor(submarine.el.y),
+        rotation: Math.floor(submarine.el.rotation),
+        health: submarine.el.health
+      },
+      {
+        name: ShipsType.Blue, 
+        x: Math.floor(blue.el.x),  
+        y: Math.floor(blue.el.y),
+        rotation: Math.floor(blue.el.rotation),
+        health: blue.el.health
+      },
+      {
+        name: ShipsType.Green, 
+        x: Math.floor(green.el.x),  
+        y: Math.floor(green.el.y),
+        rotation: Math.floor(green.el.rotation),
+        health: green.el.health
+      }
+    ];
+
+    $.post("rest/ships", JSON.stringify(ships), function(response) {
+      if ((response == "success") && showSuccess) {
+        alert("Guardado con exito.")
+      } 
+
+      if (response != "success") {
+        alert("Ocurrio un error.")
+      }
+    });
   };
 
   var getSubmarine = function() {
@@ -436,6 +447,7 @@ var ships = (function() {
     init: init,
     getSubmarine: getSubmarine,
     getBlue: getBlue,
-    getGreen: getGreen
+    getGreen: getGreen,
+    saveShips: saveShips
   }
 })();

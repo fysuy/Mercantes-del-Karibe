@@ -80,6 +80,14 @@ var app = (function  () {
       }
     });
 
+    $("#btn-save").click(function() {
+      ships.saveShips(true);
+    });
+
+    $("#btn-route-ok").click(function() {
+      $("#safe-route-dialog").hide();
+    });
+
     $(".insert-nickname").hide();
     $(".select-sides").hide();
 
