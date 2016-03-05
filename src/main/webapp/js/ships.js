@@ -13,6 +13,8 @@ var ships = (function() {
     this.el.body.collideWorldBounds = true;
     this.el.health = 2;
 
+    this.state = ShipStates.Alive;
+
     this.el.type = type;
 
     this.timer = this.game.time.create(false);
@@ -51,7 +53,12 @@ var ships = (function() {
           }
           else if (cursors.up.isDown)
           {
-            this.el.currentSpeed = 300;
+            if (this.el.type == ShipsType.submarine) {
+              this.el.currentSpeed = 300;
+            } else {
+              this.el.currentSpeed = 150;
+            }
+            
           }
         }
 
@@ -94,6 +101,7 @@ var ships = (function() {
     }
     if (this.el.health <= 0) {
       this.el.kill();
+      this.state = ShipStates.Destroyed;
       return true;
     }
     return false;
@@ -116,7 +124,7 @@ var ships = (function() {
 
     this.vision = game.add.graphics(-1000, -1000);
     this.vision.beginFill(0x000000);
-    this.vision.drawCircle(0, 0, 200);
+    this.vision.drawCircle(0, 0, 400);
 
     // Propiedades del barco azul
     if (this.el.type == ShipsType.Blue) {
@@ -178,9 +186,9 @@ var ships = (function() {
     this.vision = game.add.graphics(this.el.x, this.y);
     this.vision.beginFill(0x000000);
     if (this.light) {
-      this.vision.drawCircle(0, 0, 400);
+      this.vision.drawCircle(0, 0, 600);
     } else {
-      this.vision.drawCircle(0, 0, 200);
+      this.vision.drawCircle(0, 0, 400);
     }
   }
 
@@ -202,7 +210,6 @@ var ships = (function() {
 
   CargoBoat.prototype.fireBullet = function() {
     if (this.el.alive) {
-      console.log("FIRE!");
 
       this.bulletLeft.reset(this.el.x, this.el.y);
       this.bulletRight.reset(this.el.x, this.el.y);
@@ -251,7 +258,7 @@ var ships = (function() {
 
       this.vision = game.add.graphics(-1000, -1000);
       this.vision.beginFill(0x000000);
-      this.vision.drawCircle(0, 0, 800);
+      this.vision.drawCircle(0, 0, 1200);
 
       // Creo la bala
       this.bullet = this.game.add.sprite(0, 0, 'bullet');
@@ -369,7 +376,7 @@ var ships = (function() {
     blue = new CargoBoat(game, ShipsType.Blue, 500, 4700);
     blue.el.visible = false;
 
-    green = new CargoBoat(game, ShipsType.Green, 700, 4700);
+    green = new CargoBoat(game, ShipsType.Green, 900, 4700);
     green.el.visible = false;
 
     setTimeout(function() {
@@ -381,7 +388,7 @@ var ships = (function() {
       green.el.x = mvd.port.x - 300;
       green.el.y = mvd.port.y - 200;
       green.el.visible = true;
-    }, 1100);
+    }, 5000);
 
     if (_admin) {
       var ships = [

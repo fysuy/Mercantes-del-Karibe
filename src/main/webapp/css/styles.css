@@ -62,8 +62,45 @@ html, body {
   padding-top: 40px;
   padding-bottom: 40px; }
 
+#hud {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  text-align: center; }
+
+#hud #lives {
+  float: left; }
+
+#hud #messages {
+  display: inline-block; }
+
+#game-container {
+  overflow: hidden; }
+
+#safe-route-dialog, #menu-pause {
+  display: none;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  width: 100%;
+  height: 100%; }
+
+#safe-route-dialog {
+  padding: 60px; }
+
+#safe-route-dialog .text-frame #submarine-spotted {
+  font-size: 24px; }
+
+#safe-route-dialog .text-frame {
+  max-width: 840px;
+  margin: auto; }
+
+#game-container {
+  overflow: hidden; }
+
 .button-style {
-  border: 4px solid #271f17;
+  border: 4px solid #000000;
   margin: 10px auto;
   display: inline-block;
   text-align: center; }
@@ -99,7 +136,7 @@ html, body {
   border: 4px solid #fdfff9; }
 
 .text-black {
-  color: #271f17; }
+  color: #000000; }
 
 .text-yellow {
   color: #EDB41A; }
@@ -118,7 +155,7 @@ p {
 
 .text-frame {
   background: #fdfff9;
-  border: 4px solid #271f17;
+  border: 4px solid #000000;
   padding: 10px;
   width: 100%;
   resize: none;

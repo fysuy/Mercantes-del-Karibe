@@ -26,7 +26,7 @@ public class ShipService {
 		String driver = "com.mysql.jdbc.Driver";
 		try {
 			Class.forName(driver);
-			String url = "jdbc:mysql://localhost:3306/mdk";
+			String url = "jdbc:mysql://192.168.1.109:3306/mdk";
 			con = (Connection) DriverManager
 					.getConnection(url, "root", "toor");
 		} catch (ClassNotFoundException | SQLException e) {

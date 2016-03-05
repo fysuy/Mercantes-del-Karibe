@@ -186,7 +186,7 @@ var map = (function  () {
   var init = function (_game, _admin) {
     game = _game;
 
-    game.stage.backgroundColor = '#000000';
+    game.stage.backgroundColor = '#0F3763';
     game.world.setBounds(0, 0, worldBounds.xBottomRight, worldBounds.yBottomRight);
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
@@ -202,14 +202,12 @@ var map = (function  () {
   var getCaribbean = function() { return caribbean; }
   var getNY = function() { return ny; }
   var getMvd = function() { return mvd; }
-  var getMask = function() { return mask; }
 
   return {
     init: init,
     worldBounds: worldBounds,
     getCaribbean: getCaribbean,
     getNY: getNY,
-    getMvd: getMvd,
-    getMask: getMask
+    getMvd: getMvd
   }
 })();
