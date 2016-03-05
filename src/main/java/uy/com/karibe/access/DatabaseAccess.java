@@ -10,11 +10,24 @@ import com.mysql.jdbc.Statement;
 
 import uy.com.karibe.domain.Island;
 import uy.com.karibe.domain.Port;
+import uy.com.karibe.domain.Ship;
 
 public class DatabaseAccess {
 
 	public static void deleteIslands(Connection con) {
 		String query = Queries.deleteIslands();
+		try
+		{			
+			Statement stmt = (Statement) con.createStatement();
+			stmt.executeUpdate(query);
+			stmt.close();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void deleteShips(Connection con) {
+		String query = Queries.deleteShips();
 		try
 		{			
 			Statement stmt = (Statement) con.createStatement();
@@ -35,6 +48,32 @@ public class DatabaseAccess {
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	public static List<Ship> selectShips(Connection con) {
+		String query = Queries.selectShips();
+		List<Ship> ships = new ArrayList<Ship>();
+		
+		try {
+			Statement stmt = (Statement) con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while(rs.next()) {
+				String name = rs.getString("name");
+				int x = rs.getInt("x");
+				int y = rs.getInt("y");
+				int rotation = rs.getInt("rotation");
+				int health = rs.getInt("health");
+				
+				Ship s = new Ship(name, x, y, rotation, health);
+				ships.add(s);
+			}
+			rs.close();
+			stmt.close();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return ships;
 	}
 	
 	public static List<Island> selectIslands(Connection con) {
@@ -110,6 +149,23 @@ public class DatabaseAccess {
 			PreparedStatement pstmt = (PreparedStatement)con.prepareStatement(query);
 			pstmt.setString(1, p.getName());
 			pstmt.setInt(2, p.getX());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void insertShip(Connection con, Ship s){
+		String query = Queries.insertShip();
+		try
+		{			
+			PreparedStatement pstmt = (PreparedStatement)con.prepareStatement(query);
+			pstmt.setString(1, s.getName());
+			pstmt.setInt(2, s.getX());
+			pstmt.setInt(3, s.getY());
+			pstmt.setInt(4, s.getRotation());
+			pstmt.setInt(5, s.getHealth());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch(Exception ex) {

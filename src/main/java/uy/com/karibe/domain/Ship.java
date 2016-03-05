@@ -10,11 +10,19 @@
 package uy.com.karibe.domain;
 
 public class Ship {
+	private String name;
 	private int x;
 	private int y;
 	private int rotation;
 	private int health;
-	private int bullets;
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 	public int getX() {
 		return x;
@@ -48,19 +56,11 @@ public class Ship {
 		this.health = health;
 	}
 
-	public int getBullets() {
-		return bullets;
-	}
-
-	public void setBullets(int bullets) {
-		this.bullets = bullets;
-	}
-
-	public Ship(int x, int y, int rotation, int health, int bullets) {
+	public Ship(String name, int x, int y, int rotation, int health) {
+		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.rotation = rotation;
 		this.health = health;
-		this.bullets = bullets;
 	}
 }

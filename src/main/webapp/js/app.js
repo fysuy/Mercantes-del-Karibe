@@ -84,7 +84,9 @@ var app = (function  () {
 
     $(".button-play").click(function() {
       $(".main-menu").hide();
-      $(".insert-nickname").show();
+      $(".insert-nickname")
+        .show()
+        .focus();
     });
 
     $(".button-prev").click(function() {
@@ -178,33 +180,18 @@ var app = (function  () {
     map.init(game, admin);
     
     // Inicio las naves
-    ships.init(game);
+    ships.init(game, admin);
 
     submarine = ships.getSubmarine();
     blue = ships.getBlue();
     green = ships.getGreen();
 
-    //var shipType = getParameterByName("shipType");
-
     switch (shipType) {
       // Player submarino
-      case ShipsType.Submarine:
-      setPlayerShip(submarine);
-        //webSocket.setUser(ShipsType.Submarine);
-        break;
-
-      // Player carguero azul
-      case ShipsType.Blue:
-      setPlayerShip(blue);
-        //webSocket.setUser(ShipsType.Blue);
-        break;
-
-      // Player carguero verde
-      case ShipsType.Green:
-      setPlayerShip(green);
-        //webSocket.setUser(ShipsType.Green);
-        break;
-      }
+      case ShipsType.Submarine: setPlayerShip(submarine); break;
+      case ShipsType.Blue: setPlayerShip(blue); break;
+      case ShipsType.Green: setPlayerShip(green); break;
+    }
 
     // Seteo que la camara siga al submarino
     game.camera.follow(ship.el);
@@ -362,8 +349,6 @@ var app = (function  () {
           break;
 
         }
-
-        
       } catch(err) {
         console.log(err);
       }   
@@ -376,11 +361,11 @@ function update() {
   mvd = map.getMvd();
     // mask = map.getMask(ship);
     
-    mask = ship.vision;
-    game.world.mask = mask;
+    //mask = ship.vision;
+    //game.world.mask = mask;
 
-    mask.x = ship.el.body.x + 36;
-    mask.y = ship.el.body.y + 36;
+    //mask.x = ship.el.body.x + 36;
+    //mask.y = ship.el.body.y + 36;
 
 
 

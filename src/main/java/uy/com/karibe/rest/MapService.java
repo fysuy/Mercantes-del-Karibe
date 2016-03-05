@@ -53,7 +53,7 @@ public class MapService {
 	
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/islands/save")
+	@Path("/islands")
 	public String saveIslands(String jsonIslands) {	
 		try {
 			Island[] islands = new Gson().fromJson(jsonIslands, Island[].class);
@@ -72,7 +72,7 @@ public class MapService {
 
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/ports/save")
+	@Path("/ports")
 	public String savePorts(String jsonPorts) {	
 		try {
 			Port[] ports = new Gson().fromJson(jsonPorts, Port[].class);
