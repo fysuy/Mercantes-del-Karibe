@@ -1,3 +1,12 @@
+/*
+ * DatabaseAccess.java
+ *
+ * MDK 4.0.1 - Acceso a la BD 
+ *
+ * 06/03/2016
+ *
+ * Copyright Drintin© 2016
+ */
 package uy.com.karibe.access;
 
 import java.sql.ResultSet;
@@ -101,7 +110,7 @@ public class DatabaseAccess {
 		
 		return islands;
 	}
-	
+	//Se retona una lista con los puertos
 	public static List<Port> selectPorts(Connection con) {
 		String query = Queries.selectPorts();
 		List<Port> ports = new ArrayList<Port>();
@@ -125,7 +134,7 @@ public class DatabaseAccess {
 		
 		return ports;
 	}
-	
+	//Guardar posicion y tamaño de las islas
 	public static void insertIsland(Connection con, Island isl){
 		String query = Queries.insertIsland();
 		try
@@ -141,7 +150,7 @@ public class DatabaseAccess {
 			ex.printStackTrace();
 		}
 	}
-	
+	//Guardar Puerto
 	public static void insertPort(Connection con, Port p){
 		String query = Queries.insertPort();
 		try
@@ -155,7 +164,7 @@ public class DatabaseAccess {
 			ex.printStackTrace();
 		}
 	}
-	
+	//Guardar barco
 	public static void insertShip(Connection con, Ship s){
 		String query = Queries.insertShip();
 		try
