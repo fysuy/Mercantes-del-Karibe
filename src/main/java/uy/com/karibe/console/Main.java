@@ -43,13 +43,32 @@ public class Main {
 			pstmt.executeUpdate();
 			pstmt.close();
 
+			/* creo la tabla para los juegos */
+			String games = "CREATE TABLE mdk.game "
+					+ "(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT)";
+			pstmt = (PreparedStatement) con.prepareStatement(games);
+			pstmt.executeUpdate();
+			pstmt.close();
+			
+			/* inserto las 2 instancias del juego ("en curso" y "guardado") */
+			String insertGame1 = "insert into mdk.game values (1)";
+			pstmt = (PreparedStatement) con.prepareStatement(insertGame1);
+			pstmt.executeUpdate();
+			pstmt.close();
+			String insertGame2 = "insert into mdk.game values (2)";
+			pstmt = (PreparedStatement) con.prepareStatement(insertGame2);
+			pstmt.executeUpdate();
+			pstmt.close();
+			
 			/* creo la tabla para las islas */
 			String islands = "CREATE TABLE mdk.islands "
 					+ "(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, "
 					+ " x int NOT NULL, "
 					+ " y int NOT NULL, "
 					+ " width int NOT NULL, "
-					+ " height int NOT NULL)";
+					+ " height int NOT NULL, "
+					+ " gameId int NOT NULL, "
+					+ " FOREIGN KEY (gameId) REFERENCES mdk.game(id))";
 			pstmt = (PreparedStatement) con.prepareStatement(islands);
 			pstmt.executeUpdate();
 			pstmt.close();
@@ -58,7 +77,9 @@ public class Main {
 			String ports = "CREATE TABLE mdk.ports "
 					+ "(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, "
 					+ " name varchar(50) NOT NULL, "
-					+ " x INT NOT NULL)";
+					+ " x INT NOT NULL, "
+					+ " gameId int NOT NULL, "
+					+ " FOREIGN KEY (gameId) REFERENCES mdk.game(id))";
 
 			pstmt = (PreparedStatement) con.prepareStatement(ports);
 			pstmt.executeUpdate();
@@ -71,7 +92,9 @@ public class Main {
 					+ " x int NOT NULL, "
 					+ " y int NOT NULL, "
 					+ " rotation int NOT NULL, "
-					+ " health int NOT NULL)";
+					+ " health int NOT NULL, "
+					+ " gameId int NOT NULL, "
+					+ " FOREIGN KEY (gameId) REFERENCES mdk.game(id))";
 
 			pstmt = (PreparedStatement) con.prepareStatement(ships);
 			pstmt.executeUpdate();

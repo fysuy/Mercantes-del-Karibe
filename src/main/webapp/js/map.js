@@ -10,6 +10,8 @@ var map = (function  () {
     yBottomRight: 7000
   };
 
+  var islands = [], ports = [];
+
   // Generamos los limites de la zona de caribe, 
   // El puerto de Mvd y NY son una 1/10 parte de la zona Caribe
   var caribbean = { 
@@ -33,7 +35,12 @@ var map = (function  () {
     caribbeanPaint.drawRect(worldBounds.xTopLeft, caribbean.yTop, worldBounds.xBottomRight, caribbean.yBottom - caribbean.yTop);
     caribbeanPaint.alpha = 0.1;
     caribbeanPaint.endFill();
-  }
+  };
+
+  var saveMap = function() {
+    $.post("rest/map/islands/2", JSON.stringify(islands));
+    $.post("rest/map/ports/2", JSON.stringify(ports));
+  };
 
   var generateIslands = function(_admin) {
     var island;
@@ -41,8 +48,6 @@ var map = (function  () {
     caribbean.islands = game.add.group();
 
     if (_admin) {
-      var islands = [];
-
       // Seteo un valor random con la cantidad de islas
       var numberOfIslands = game.rnd.integerInRange(25, 40);
       
@@ -67,6 +72,7 @@ var map = (function  () {
         caribbean.islands.add(island);
         
         islands.push({
+          gameId: 1,
           x: x,
           y: y,
           width: width,
@@ -74,11 +80,12 @@ var map = (function  () {
         });
       }
 
-      $.post("rest/map/islands", JSON.stringify(islands));
+      $.post("rest/map/islands/1", JSON.stringify(islands));
 
     } else {
-      $.get("rest/map/islands", function(islands) {
-        $.each(islands, function(i, island) {
+      $.get("rest/map/islands/1", function(_islands) {
+        islands = _islands;
+        $.each(_islands, function(i, island) {
           isl = game.add.tileSprite(island.x, island.y, island.width, island.height, 'island');
           game.physics.arcade.enable(isl);
           isl.body.immovable = true;
@@ -97,16 +104,17 @@ var map = (function  () {
       xNyPort = game.rnd.between(worldBounds.xTopLeft, worldBounds.xBottomRight - 440);
       xMvdPort = game.rnd.between(worldBounds.xTopLeft + 440, worldBounds.xBottomRight);
 
-      var ports = [
+      ports = [
         { name: 'ny', x: xNyPort },
         { name: 'mvd', x: xMvdPort }
       ];
 
-      $.post("rest/map/ports", JSON.stringify(ports));
+      $.post("rest/map/ports/1", JSON.stringify(ports));
       deferred.resolve(xNyPort, xMvdPort);
     } else {
-      $.get("rest/map/ports", function(ports) {
-        $.each(ports, function(i, port) {
+      $.get("rest/map/ports/1", function(_ports) {
+        ports = _ports;
+        $.each(_ports, function(i, port) {
           switch(port.name) {
             case 'ny': xNyPort = port.x; break;
             case 'mvd': xMvdPort = port.x; break;
@@ -208,6 +216,7 @@ var map = (function  () {
     worldBounds: worldBounds,
     getCaribbean: getCaribbean,
     getNY: getNY,
-    getMvd: getMvd
+    getMvd: getMvd,
+    saveMap: saveMap
   }
 })();
