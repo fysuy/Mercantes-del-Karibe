@@ -52,14 +52,12 @@ function getParameterByName(name, url) {
   if (!results[2]) return '';
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
-var height = $(window).height();
-var width = $(window).width();
+
+var height = window.innerHeight;
+var width = window.innerWidth;
 
 var app = (function  () {
-  var cursors, game,
-    pauseButton,
-  gameWidth = 800, 
-  gameHeight = 600, 
+  var cursors, game, pauseButton,
   gameContainer = 'game-container',
   submarine, blue, green, ship,
   caribbean, ny, mvd, mask,
@@ -70,7 +68,6 @@ var app = (function  () {
   }
 
   $(document).ready(function() {
-
     $('body').keydown(function(e){
       if(e.which === 13) {
         var $btnNext = $(".button-next");
@@ -82,6 +79,7 @@ var app = (function  () {
 
     $("#btn-save").click(function() {
       ships.saveShips(true);
+      map.saveMap();
     });
 
     $("#btn-route-ok").click(function() {
@@ -161,7 +159,7 @@ var app = (function  () {
     });
     //Foco al juego
     $('#game-title').remove();
-    $('#players-list').remove();
+    $('.select-sides').remove();
   };
 
   function render() {}

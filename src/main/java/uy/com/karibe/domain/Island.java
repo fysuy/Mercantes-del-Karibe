@@ -10,16 +10,22 @@
 package uy.com.karibe.domain;
 
 public class Island {
+	private int gameId;
 	private int x;
 	private int y;
 	private int width;
 	private int height;
 	
-	public Island(int x, int y, int width, int height) {
+	public Island(int gameId, int x, int y, int width, int height) {
+		this.gameId = gameId;
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
+	}
+	
+	public int getGameId() {
+		return gameId;
 	}
 	
 	public int getX() {
