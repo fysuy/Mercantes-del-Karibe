@@ -12,26 +12,10 @@ html, body {
   html body, body body {
     font: 30px minecraftiaregular, Helvetica, sans-serif;
     color: #fdfff9;
-    background-color: #0F3763;
+    background-color: #2c8af4;
     text-transform: uppercase; }
     html body > .row, body body > .row {
       margin: 0; }
-    html body .svg-container, body body .svg-container {
-      border: 1px solid white;
-      display: block;
-      margin: 0 auto;
-      width: 50%;
-      height: 500px;
-      overflow: hidden; }
-      html body .svg-container svg, body body .svg-container svg {
-        background-color: #2B8AF4; }
-        html body .svg-container svg .axis, body body .svg-container svg .axis {
-          fill: #3895F4;
-          stroke: #3895F4;
-          stroke-width: 2; }
-        html body .svg-container svg .island, body body .svg-container svg .island {
-          fill: #A4ED60;
-          stroke: #A4ED60; }
 
 #container-page {
   display: table;
@@ -62,6 +46,10 @@ html, body {
   padding-top: 40px;
   padding-bottom: 40px; }
 
+.game-title {
+  padding-top: 20px;
+  padding-bottom: 20px; }
+
 #hud {
   position: absolute;
   width: 100%;
@@ -78,10 +66,10 @@ html, body {
 #game-container {
   overflow: hidden; }
 
-#safe-route-dialog, #menu-pause {
+#safe-route-dialog, #menu-pause, #menu-game-over {
   display: none;
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(44, 138, 244, 0.9);
   text-align: center;
   width: 100%;
   height: 100%; }
@@ -177,11 +165,23 @@ p {
   margin-bottom: 10px;
   display: block; }
 
+.inline-block {
+  display: inline-block; }
+
+.underline {
+  text-decoration: underline; }
+
 .padding-0 {
   padding: 0; }
 
 .margin-bottom {
   margin-bottom: 20px; }
+
+.margin-left {
+  margin-left: 20px; }
+
+.margin-right {
+  margin-right: 20px; }
 
 .top {
   top: 0; }
