@@ -67,8 +67,9 @@ public class DatabaseAccess {
 				int y = rs.getInt("y");
 				int rotation = rs.getInt("rotation");
 				int health = rs.getInt("health");
+				String nickname = rs.getString("nickname");
 				
-				Ship s = new Ship(gameId, name, x, y, rotation, health);
+				Ship s = new Ship(gameId, name, x, y, rotation, health, nickname);
 				ships.add(s);
 			}
 			rs.close();
@@ -78,6 +79,41 @@ public class DatabaseAccess {
 		}
 		
 		return ships;
+	}
+	
+	public static void updateNicknameByRole(Connection con, 
+			int _gameId, String _nickname, String _role) {
+		String query = Queries.updateNicknameByRole();
+		try {
+			PreparedStatement pstmt = (PreparedStatement)con.prepareStatement(query);
+			pstmt.setString(1, _nickname);
+			pstmt.setString(2, _role);
+			pstmt.setInt(3, _gameId);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static String getRoleByNickname(Connection con, int _gameId, String _nickname) {
+		String query = Queries.getRoleByNickname();
+		String role = "";
+		try {
+			PreparedStatement pstmt = (PreparedStatement)con.prepareStatement(query);
+			pstmt.setString(1, _nickname);
+			pstmt.setInt(2, _gameId);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				role = rs.getString("name");
+			}
+			rs.close();
+			pstmt.close();
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return role;
 	}
 	
 	public static List<Island> selectIslands(Connection con, int _gameId) {
@@ -177,6 +213,7 @@ public class DatabaseAccess {
 			pstmt.setInt(4, s.getRotation());
 			pstmt.setInt(5, s.getHealth());
 			pstmt.setInt(6, gameId);
+			pstmt.setString(7, s.getNickname());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch(Exception ex) {

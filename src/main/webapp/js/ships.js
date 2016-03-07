@@ -1,10 +1,12 @@
 var ships = (function() {
-  function Ship (game, type, x, y) {
+  function Ship (game, type, x, y, nickname) {
     this.game = game;
 
     this.dx = x;
     this.dy = y;
     this.dRotation = 0;
+
+    this.nickname = nickname;
 
     this.el = this.game.add.sprite(x, y, type);
     this.el.anchor.setTo(0.5, 0.5);
@@ -18,7 +20,7 @@ var ships = (function() {
     this.el.type = type;
 
     this.timer = this.game.time.create(false);
-    this.timer.loop(100, function() { this.allowSend = true; }, this);
+    this.timer.loop(1000, function() { this.allowSend = true; }, this);
 
     this.allowSend = false;
 
@@ -69,23 +71,24 @@ var ships = (function() {
 
         if (this.el.currentSpeed >= 0)
         {        
-          this.dx = Math.ceil(this.el.x);
-          this.dy = Math.ceil(this.el.y);
-          this.dRotation = Math.ceil(this.el.rotation);
-
           if (this.el.currentSpeed > 0) {
             this.el.currentSpeed -= 5;
             this.game.physics.arcade.velocityFromRotation(this.el.rotation, this.el.currentSpeed, this.el.body.velocity);
           }
         }
 
-        if (this.hasMoved && this.allowSend)  {
+        if (this.hasMoved() && this.allowSend)  {
+          this.dx = Math.ceil(this.el.x);
+          this.dy = Math.ceil(this.el.y);
+          this.dRotation = Math.ceil(this.el.rotation);
+
           var message = {
             id: WebSocketIDs.UpdateCoordinates,
             x: this.el.x,
             y: this.el.y,
             rotation: this.el.rotation
           };
+
           webSocket.sendMessage(message);
           this.allowSend = false;
         }
@@ -361,62 +364,97 @@ var ships = (function() {
   }
 
   // Variables de los barcos
-  var submarine, blue, green, game;
+  var submarine, blue, green, game, loadedShips;
 
-  var init = function(_game, _admin) {
+  var fromLoad = function() {
+    $.get("rest/ships/2", function(_ships) {
+      loadedShips = _ships;
+    });
+  }
+
+  var init = function(_players, _game, _admin, _fromLoad) {
     game = _game;
 
     var caribbean = map.getCaribbean();
     var x, y;
 
-    x = game.rnd.between(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
-    y = game.rnd.between(caribbean.yTop, caribbean.yBottom);
-    submarine = new Submarine(game, ShipsType.Submarine, x, y);
+    if (_fromLoad) {
+      $.each(loadedShips, function(i, ship) {
+        if (ship.name == ShipsType.Submarine) {
+          submarine = new Submarine(game, ShipsType.Submarine, ship.x, ship.y);
+        }
 
-    blue = new CargoBoat(game, ShipsType.Blue, 500, 4700);
-    blue.el.visible = false;
+        if (ship.name == ShipsType.Blue) {
+          blue = new Submarine(game, ShipsType.Blue, ship.x, ship.y);
+        }
 
-    green = new CargoBoat(game, ShipsType.Green, 900, 4700);
-    green.el.visible = false;
+        if (ship.name == ShipsType.Green) {
+          green = new Submarine(game, ShipsType.Green, ship.x, ship.y);
+        }
+      });  
+    } else {
+      x = game.rnd.between(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
+      y = game.rnd.between(caribbean.yTop, caribbean.yBottom);
+      submarine = new Submarine(game, ShipsType.Submarine, x, y);
 
-    setTimeout(function() {
-      var mvd = map.getMvd();
-      blue.el.x = mvd.port.x - 100;
-      blue.el.y = mvd.port.y - 200;
-      blue.el.visible = true;
+      blue = new CargoBoat(game, ShipsType.Blue, 500, 4700);
+      blue.el.visible = false;
 
-      green.el.x = mvd.port.x - 300;
-      green.el.y = mvd.port.y - 200;
-      green.el.visible = true;
-    }, 5000);
+      green = new CargoBoat(game, ShipsType.Green, 900, 4700);
+      green.el.visible = false;
 
-    if (_admin) {
-      saveShips(false);
+      setTimeout(function() {
+        var mvd = map.getMvd();
+        blue.el.x = mvd.port.x - 100;
+        blue.el.y = mvd.port.y - 200;
+        blue.el.visible = true;
+
+        green.el.x = mvd.port.x - 300;
+        green.el.y = mvd.port.y - 200;
+        green.el.visible = true;
+      }, 5000);
+
+      if (_admin) {
+        saveShips(_players, false);
+      }
     }
   };
 
-  var saveShips = function(fromSaveBtn) {
+  var saveShips = function(players, fromSaveBtn) {
+    var getNicknameByRole = function (players, role) {
+      var nickname;
+      $.each(players, function(i, p) {
+        if (p.role == role) {
+          nickname = p.name;
+        }
+      });
+      return nickname;
+    }
+
     var ships = [
       { 
         name: ShipsType.Submarine, 
         x: Math.floor(submarine.el.x),  
         y: Math.floor(submarine.el.y),
         rotation: Math.floor(submarine.el.rotation),
-        health: submarine.el.health
+        health: submarine.el.health,
+        nickname: getNicknameByRole(players, ShipsType.Submarine)
       },
       {
         name: ShipsType.Blue, 
         x: Math.floor(blue.el.x),  
         y: Math.floor(blue.el.y),
         rotation: Math.floor(blue.el.rotation),
-        health: blue.el.health
+        health: blue.el.health,
+        nickname: getNicknameByRole(players, ShipsType.Blue)
       },
       {
         name: ShipsType.Green, 
         x: Math.floor(green.el.x),  
         y: Math.floor(green.el.y),
         rotation: Math.floor(green.el.rotation),
-        health: green.el.health
+        health: green.el.health,
+        nickname: getNicknameByRole(players, ShipsType.Green)
       }
     ];
 
@@ -448,6 +486,7 @@ var ships = (function() {
     getSubmarine: getSubmarine,
     getBlue: getBlue,
     getGreen: getGreen,
-    saveShips: saveShips
+    saveShips: saveShips,
+    fromLoad: fromLoad
   }
 })();

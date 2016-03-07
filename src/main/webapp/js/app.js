@@ -64,8 +64,8 @@ var app = (function  () {
   var cursors, game, pauseButton,
   gameContainer = 'game-container',
   submarine, blue, green, ship,
-  caribbean, ny, mvd, mask,
-  currentSpeed, shipType;
+  caribbean, ny, mvd, mask, players,
+  currentSpeed, shipType, fromLoad;
 
   var addPlayer = function(name, role) {
     $("#players-list").html(name);
@@ -82,7 +82,7 @@ var app = (function  () {
     });
 
     $("#btn-save").click(function() {
-      ships.saveShips(true);
+      ships.saveShips(players, true);
       map.saveMap();
     });
 
@@ -93,10 +93,22 @@ var app = (function  () {
     $(".insert-nickname").hide();
     $(".select-sides").hide();
 
-    $(".button-play, #btn-load-game").click(function() {
+    $(".button-play").click(function(event) {
       $(".main-menu").hide();
       $(".insert-nickname")
         .show();
+
+      // Guardo que la partida se inicia normalemente y no desde reanudar
+      fromLoad = false;
+    });
+
+    $("#btn-load-game").click(function(event) {
+      $(".main-menu").hide();
+      $(".insert-nickname")
+        .show();
+
+      // Guardo que la partida se inicia desde reanudar
+      fromLoad = true;
     });
 
     $(".button-prev").click(function() {
@@ -111,7 +123,7 @@ var app = (function  () {
       $(".select-sides").show();
 
       var nickname = $("#insert-nickname").val();
-      var connection = webSocket.init();
+      webSocket.init(fromLoad, nickname);
 
       //Solicito los usuarios conectados
       setTimeout(function() {
@@ -121,19 +133,10 @@ var app = (function  () {
         }
 
         webSocket.sendMessage(message);
-      }, 1000); 
+      }, 2000); 
 
       webSocket.setOnMessage(function(msg) {
         var jsonMsg = JSON.parse(msg.data);
-
-        if (jsonMsg.id == "setRole") {
-          if (!shipType) {
-            shipType = jsonMsg.message;
-            webSocket.setUser(nickname, shipType);  
-          } else {
-            addPlayer(jsonMsg.name);
-          }
-        }
         
         //Obtengo los usuarios conectados
         if (jsonMsg.id == "getUsersConnected") {
@@ -141,19 +144,35 @@ var app = (function  () {
         }
 
         if (jsonMsg.id == "initGame") {
-          if (shipType == ShipsType.Submarine) {
-            init();
-          } else {
-            setTimeout(function() {
-              init(); //Comienzo Juego
-            }, 2000);     
-          }         
+          players = JSON.parse(jsonMsg.message);
+
+          if (fromLoad) {
+            map.fromLoad();
+            ships.fromLoad();
+          }
+
+          setTimeout(function() {
+            $.each(players, function(i, player) {
+              if (player.name == $("#insert-nickname").val()) {
+                webSocket.setUser(player.role);
+                if (player.role == ShipsType.Submarine) {
+                  init(player.role);
+                } else {
+                  setTimeout(function() {
+                    init(player.role); //Comienzo Juego
+                  }, 2000);     
+                }         
+              }
+            });
+          }, 500);
         }
       });
     });
   });
 
-  var init = function() {
+  var init = function(_shipType) {
+    shipType = _shipType;
+
     game = new Phaser.Game(width, height, Phaser.AUTO, gameContainer, { 
       preload: preload, 
       create: create, 
@@ -187,10 +206,11 @@ var app = (function  () {
 
     // Inicio todo lo relacionado al mapa del juego
     var admin = (shipType == ShipsType.Submarine);
-    map.init(game, admin);
+    map.fromLoad(false);
+    map.init(game, admin, fromLoad);
     
     // Inicio las naves
-    ships.init(game, admin);
+    ships.init(players, game, admin, fromLoad);
 
     submarine = ships.getSubmarine();
     blue = ships.getBlue();
@@ -231,7 +251,7 @@ var app = (function  () {
     pauseButton.onDown.add(listenerPause, this);
 
     // Muestro la ruta segura
-    showSafeRoute();
+    showSafeRoute();  
 
     /* ------------------------------------- */
     /* ---- COMPORTARMIENTO MENSAJES WS ---- */

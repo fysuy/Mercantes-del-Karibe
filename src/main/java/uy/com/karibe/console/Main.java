@@ -85,7 +85,7 @@ public class Main {
 			pstmt.executeUpdate();
 			pstmt.close();
 			
-			/* creo la tabla de los puertos */
+			/* creo la tabla de las naves */
 			String ships = "CREATE TABLE mdk.ships "
 					+ "(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, "
 					+ " name varchar(50) NOT NULL, "
@@ -94,6 +94,7 @@ public class Main {
 					+ " rotation int NOT NULL, "
 					+ " health int NOT NULL, "
 					+ " gameId int NOT NULL, "
+					+ " nickname varchar(50), "
 					+ " FOREIGN KEY (gameId) REFERENCES mdk.game(id))";
 
 			pstmt = (PreparedStatement) con.prepareStatement(ships);
