@@ -89,11 +89,10 @@ var app = (function  () {
     $(".insert-nickname").hide();
     $(".select-sides").hide();
 
-    $(".button-play").click(function() {
+    $(".button-play, #btn-load-game").click(function() {
       $(".main-menu").hide();
       $(".insert-nickname")
-        .show()
-        .focus();
+        .show();
     });
 
     $(".button-prev").click(function() {
