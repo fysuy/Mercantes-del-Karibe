@@ -394,11 +394,11 @@ var ships = (function() {
     }, 5000);
 
     if (_admin) {
-      saveShips();
+      saveShips(false);
     }
   };
 
-  var saveShips = function(showSuccess) {
+  var saveShips = function(fromSaveBtn) {
     var ships = [
       { 
         name: ShipsType.Submarine, 
@@ -423,13 +423,13 @@ var ships = (function() {
       }
     ];
 
-    $.post("rest/ships", JSON.stringify(ships), function(response) {
-      if ((response == "success") && showSuccess) {
-        alert("Guardado con exito.")
-      } 
-
-      if (response != "success") {
-        alert("Ocurrio un error.")
+    $.post("rest/ships/" + (fromSaveBtn ? 2 : 1), JSON.stringify(ships), function(response) {
+      if (fromSaveBtn) {
+        if (response == "success") {
+          alert("Guardado con exito.")
+        } else {
+          alert("Ocurrio un error.")
+        }
       }
     });
   };

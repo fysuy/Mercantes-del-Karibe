@@ -10,8 +10,13 @@
 package uy.com.karibe.domain;
 
 public class Port {
+	private int gameId;
 	private int x;
 	private String name;
+	
+	public int getGameId() {
+		return gameId;
+	}
 	
 	public int getX() {
 		return x;
@@ -29,7 +34,8 @@ public class Port {
 		this.name = name;
 	}
 	
-	public Port(int x, String name) {
+	public Port(int gameId, int x, String name) {
+		this.gameId = gameId;
 		this.x = x;
 		this.name = name;
 	}

@@ -10,11 +10,16 @@
 package uy.com.karibe.domain;
 
 public class Ship {
+	private int gameId;
 	private String name;
 	private int x;
 	private int y;
 	private int rotation;
 	private int health;
+	
+	public int getGameId() {
+		return gameId;
+	}
 	
 	public String getName() {
 		return name;
@@ -56,7 +61,8 @@ public class Ship {
 		this.health = health;
 	}
 
-	public Ship(String name, int x, int y, int rotation, int health) {
+	public Ship(int gameId, String name, int x, int y, int rotation, int health) {
+		this.gameId = gameId;
 		this.name = name;
 		this.x = x;
 		this.y = y;

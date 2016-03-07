@@ -14,7 +14,8 @@ var WebSocketIDs = {
   ShipsCollided: 'shipsCollided',
   ShipShot: 'shipShot',
   GameOver: 'gameOver',
-  GamePaused: 'gamePaused'
+  GamePaused: 'gamePaused',
+  ShipLeft: 'shipLeft'
 };
 
 var GameResults = {
@@ -43,7 +44,10 @@ var Strings = {
   ShipKilledGreen: 'El carguero verde ha sido destruido.',
   GameResultDraw: 'Malas noticias para todos. Esta batalla quedara en la historia como un empate.',
   GameResultNazis: 'Los nazis ganaron esta batalla. Las cargas de corned beef uruguayo fueron destruidas.',
-  GameResultUruguay: 'Los cargueros uruguayos lograron sobrevivir a los ataques nazis.'
+  GameResultUruguay: 'Los cargueros uruguayos lograron sobrevivir a los ataques nazis.',
+  SubmarineLeft: 'El submarino abandono la partida.',
+  ShipBlueLeft: 'El carguero azul abandono la patida.',
+  ShipGreenLeft: 'El carguero verde abandono la partida.'
 }
 
 function getParameterByName(name, url) {
@@ -55,14 +59,13 @@ function getParameterByName(name, url) {
   if (!results[2]) return '';
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
-var height = $(window).height();
-var width = $(window).width();
+
+var height = window.innerHeight;
+var width = window.innerWidth;
 
 var app = (function  () {
-  var cursors, game,
+  var cursors, game, pauseButton,
   pauseButton,
-  gameWidth = 800, 
-  gameHeight = 600, 
   gameContainer = 'game-container',
   submarine, blue, green, ship,
   caribbean, ny, mvd, mask,
@@ -73,7 +76,6 @@ var app = (function  () {
   }
 
   $(document).ready(function() {
-
     $('body').keydown(function(e){
       if(e.which === 13) {
         var $btnNext = $(".button-next");
@@ -85,6 +87,7 @@ var app = (function  () {
 
     $("#btn-save").click(function() {
       ships.saveShips(true);
+      map.saveMap();
     });
 
     $("#btn-route-ok").click(function() {
@@ -407,6 +410,27 @@ var app = (function  () {
             }, 100);
             break;
 
+          //Si un jugador cierra la sesion, debe de morir su nave.  
+          case WebSocketIDs.ShipLeft:
+            switch (jsonMsg.name) {
+              case ShipsType.Submarine: 
+                submarine.el.kill();
+                submarine.state = ShipStates.Destroyed;
+                $('#hud #messages').text(Strings.SubmarineLeft);
+                //ENVIO
+              break;
+              case ShipsType.Blue:
+                blue.el.kill();
+                blue.state = ShipStates.Destroyed;
+                $('#hud #messages').text(Strings.ShipBlueLeft);
+              break;
+              case ShipsType.Green:
+                green.el.kill();
+                green.state = ShipStates.Destroyed;
+                $('#hud #messages').text(Strings.ShipGreenLeft);
+              break;       
+            } 
+           break; 
           // Update pausa
           case WebSocketIDs.GamePaused:
           console.log("Pausa " + jsonMsg.user);
@@ -695,8 +719,6 @@ function update() {
         $('#hud #messages').text(Strings.ShipArrivedGreen);
       });
 
-      /* --------------------- */
-
     } else {
       game.physics.arcade.overlap(submarine.missile, green.el, function() { submarine.missile.kill(); });
       game.physics.arcade.overlap(submarine.bullet, green.el, function() { submarine.bullet.kill(); });
@@ -754,7 +776,7 @@ function update() {
     }
   // FIN UPDATE
   }
-
+  
   var setPlayerShip = function(_ship) {
     ship = _ship;
   };

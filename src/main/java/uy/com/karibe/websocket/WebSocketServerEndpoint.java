@@ -78,6 +78,8 @@ public class WebSocketServerEndpoint {
 		playersRoles.remove(session.getId());
 		playersNames.remove(session.getId());
 		roles.add(role);
+		JsonMsg shipDeadMsg = new JsonMsg("shipLeft", role , "true");
+		sendMessageToAll(new Gson().toJson(shipDeadMsg), session, false);
 	}
 
 	@OnMessage

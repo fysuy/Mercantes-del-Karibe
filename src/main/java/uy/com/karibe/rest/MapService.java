@@ -1,3 +1,12 @@
+/*
+ * MapService.java
+ *
+ * MDK 4.0.1 - Implementacion de los servicios REST para el mapa
+ *
+ * 06/03/2016
+ *
+ * Copyright Drintin© 2016
+ */
 package uy.com.karibe.rest;
 
 import java.sql.DriverManager;
@@ -8,7 +17,9 @@ import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.google.gson.Gson;
@@ -36,32 +47,32 @@ public class MapService {
 	}
 	
 	@GET
-	@Path("/islands")
+	@Path("/islands/{gId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getIslands () {
-		List<Island> islands = DatabaseAccess.selectIslands(con);
+	public String getIslands (@PathParam("gId") int gameId) {
+		List<Island> islands = DatabaseAccess.selectIslands(con, gameId);
 		return new Gson().toJson(islands);
 	}
 	
 	@GET
-	@Path("/ports")
+	@Path("/ports/{gId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getPorts () {
-		List<Port> ports = DatabaseAccess.selectPorts(con);
+	public String getPorts (@PathParam("gId") int gameId) {
+		List<Port> ports = DatabaseAccess.selectPorts(con, gameId);
 		return new Gson().toJson(ports);
 	}
 	
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/islands")
-	public String saveIslands(String jsonIslands) {	
+	@Path("/islands/{gId}")
+	public String saveIslands(@PathParam("gId") int gameId, String jsonIslands) {	
 		try {
 			Island[] islands = new Gson().fromJson(jsonIslands, Island[].class);
 			
-			DatabaseAccess.deleteIslands(con);
+			DatabaseAccess.deleteIslands(con, gameId);
 			
 			for (Island island : islands) {
-				DatabaseAccess.insertIsland(con, island);
+				DatabaseAccess.insertIsland(con, gameId, island);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -73,15 +84,15 @@ public class MapService {
 
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/ports")
-	public String savePorts(String jsonPorts) {	
+	@Path("/ports/{gId}")
+	public String savePorts(@PathParam("gId") int gameId, String jsonPorts) {	
 		try {
 			Port[] ports = new Gson().fromJson(jsonPorts, Port[].class);
 			
-			DatabaseAccess.deletePorts(con);
+			DatabaseAccess.deletePorts(con, gameId);
 			
 			for (Port p : ports) {
-				DatabaseAccess.insertPort(con, p);
+				DatabaseAccess.insertPort(con, gameId, p);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
