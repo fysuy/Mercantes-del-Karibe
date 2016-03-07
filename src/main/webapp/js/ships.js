@@ -354,9 +354,27 @@ var ships = (function() {
     var caribbean = map.getCaribbean();
     var x, y;
 
-    x = game.rnd.between(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
-    y = game.rnd.between(caribbean.yTop, caribbean.yBottom);
-    submarine = new Submarine(game, ShipsType.Submarine, x, y);
+    var overlapsIsland = true;
+    var islands = caribbean.islands;
+
+    // Crea el submarino chequeando que no este sobre una isla
+    while (overlapsIsland) {
+      x = game.rnd.between(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
+      y = game.rnd.between(caribbean.yTop + 72, caribbean.yBottom - 72);
+
+      submarine = new Submarine(game, ShipsType.Submarine, x, y);
+      var end = true;
+      game.physics.arcade.overlap(islands, submarine.el, function() {
+        console.log (submarine.el.overlap(islands));
+        submarine = null;
+        end = false;
+      });
+      if (end) {
+        overlapsIsland = false;
+        game.physics.arcade.overlap(islands, submarine.el);
+      }
+      
+    }
 
     blue = new CargoBoat(game, ShipsType.Blue, 500, 4700);
     blue.el.visible = false;
