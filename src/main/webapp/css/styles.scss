@@ -11,7 +11,7 @@
 }
 
 $font-stack: minecraftiaregular, Helvetica, sans-serif;
-$bg-color: #0F3763;
+$bg-color: #2c8af4;
 $color-white: #fdfff9;
 
 $color-yellow: #f8c12a;
@@ -71,6 +71,10 @@ html, body {
   padding-bottom: 40px;
 }
 
+.game-title {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
 
 #hud {
   position: absolute;
@@ -92,10 +96,10 @@ html, body {
   overflow: hidden;
 }
 
-#safe-route-dialog, #menu-pause {
+#safe-route-dialog, #menu-pause, #menu-game-over {
   display: none;
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(44,138,244,0.9);
   text-align: center;
   width: 100%;
   height: 100%;
@@ -184,8 +188,13 @@ p {
   display: block;
 }
 
+.inline-block { display: inline-block; }
+.underline { text-decoration: underline; }
+
 .padding-0 { padding: 0; }
 .margin-bottom { margin-bottom: 20px; }
+.margin-left { margin-left: 20px; }
+.margin-right { margin-right: 20px; }
 .top { top: 0; }
 .bottom { bottom: 0px; }
 .right { right: 0; }
