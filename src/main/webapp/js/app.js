@@ -60,7 +60,7 @@ var width = $(window).width();
 
 var app = (function  () {
   var cursors, game,
-    pauseButton,
+  pauseButton,
   gameWidth = 800, 
   gameHeight = 600, 
   gameContainer = 'game-container',
@@ -365,16 +365,18 @@ var app = (function  () {
 
           // Update barco disparado
           case WebSocketIDs.ShipShot:
-          switch (jsonMsg.ship) {
-            case ShipsType.Submarine: 
-                var destroyed = submarine.damage(jsonMsg.ammo);
-                if (destroyed) {
+            switch (jsonMsg.ship) {
+              case ShipsType.Submarine: 
+                if (jsonMsg.user != ShipsType.Submarine) {
+                  var destroyed = submarine.damage(jsonMsg.ammo);
+                  if (destroyed) {
+                    $('#hud #messages').text(Strings.ShipKilledSubmarine);
+                  }
+                  submarine.el.kill();
                   $('#hud #messages').text(Strings.ShipKilledSubmarine);
                 }
-            submarine.el.kill();
-                $('#hud #messages').text(Strings.ShipKilledSubmarine);
-            break;
-            case ShipsType.Blue: 
+                break;
+              case ShipsType.Blue: 
                 var destroyed = blue.damage(jsonMsg.ammo);
                 if (destroyed) {
                   if (ship.el.type == ShipsType.Blue) {
@@ -382,10 +384,9 @@ var app = (function  () {
                   } else {
                     $('#hud #messages').text(Strings.ShipKilledBlue);
                   }
-            }
-                
-            break;
-            case ShipsType.Green: 
+                }
+                break;
+              case ShipsType.Green: 
                 var destroyed = green.damage(jsonMsg.ammo);
                 if (destroyed) {
                   if (ship.el.type == ShipsType.Green) {
@@ -393,14 +394,17 @@ var app = (function  () {
                   } else {
                     $('#hud #messages').text(Strings.ShipKilledGreen);
                   }
+                }
+                break;
             }
             break;
-          }
-          break;
 
           // Update fin del juego
           case WebSocketIDs.GameOver:
-            //toggleGameOver(jsonMsg);
+            console.log('GAME OVER' + jsonMsg.result + ' ' + submarine.state + ' ' + blue.state + ' ' + green.state)
+            setTimeout(function() {
+              toggleGameOver(jsonMsg.result);
+            }, 100);
             break;
 
           // Update pausa
@@ -704,11 +708,51 @@ function update() {
       game.physics.arcade.overlap(blue.bulletLeft, submarine.el, function() { blue.bulletLeft.kill(); });
     }
 
+    if (blue.bulletLeft.exists) {
+      if (blue.bulletLeft.alive) {
+        if (Phaser.Math.distance(blue.bulletLeft.startX, blue.bulletLeft.startY, 
+                          blue.bulletLeft.x, blue.bulletLeft.y) > blue.bulletRange) {
+          blue.bulletLeft.kill();
+        }
+      }
+    }
+    if (blue.bulletRight.exists) {
+      if (blue.bulletRight.alive) {
+        if (Phaser.Math.distance(blue.bulletRight.startX, blue.bulletRight.startY, 
+                          blue.bulletRight.x, blue.bulletRight.y) > blue.bulletRange) {
+          blue.bulletRight.kill();
+        }
+      }
+    }
+    if (submarine.bullet.exists) {
+      if (submarine.bullet.alive) {
+        if (Phaser.Math.distance(submarine.bullet.startX, submarine.bullet.startY, 
+                          submarine.bullet.x, submarine.bullet.y) > submarine.bulletRange) {
+          submarine.bullet.kill();
+        }
+      }
+    }
+    if (submarine.missile.exists) {
+      if (submarine.missile.alive) {
+        if (Phaser.Math.distance(submarine.missile.startX, submarine.missile.startY, 
+                          submarine.missile.x, submarine.missile.y) > submarine.missileRange) {
+          submarine.missile.kill();
+        }
+      }
+    }
+
     ship.update(cursors);
+    
     var gameResult = checkGameOver();
     if (gameResult != null) {
+      var message = {
+        id: WebSocketIDs.GameOver,
+        result: gameResult
+      };
+      webSocket.sendMessage(message);
       toggleGameOver(gameResult);
     }
+  // FIN UPDATE
   }
 
   var setPlayerShip = function(_ship) {
@@ -729,28 +773,15 @@ function update() {
 
     // Asigno una ruta segura
     var strSafeRouteSide;
-    var rndRoute = game.rnd.integerInRange(0, 1);
     if (strSubmarineSpotted == 'oeste ') {
       // submarino en el oeste
-      if (rndRoute == 0) {
-        strSafeRouteSide = 'centro';
-      } else {
-        strSafeRouteSide = 'este';
-      }
+      strSafeRouteSide = 'centro';
     } else if (strSubmarineSpotted == 'central ') {
       // submarino en el centro
-      if (rndRoute == 0) {
-        strSafeRouteSide = 'oeste';
-      } else {
-        strSafeRouteSide = 'este';
-      }
+      strSafeRouteSide = 'este';
     } else {
       // submarino en el este
-      if (rndRoute == 0) {
-        strSafeRouteSide = 'oeste';
-      } else {
-        strSafeRouteSide = 'centro';
-      }
+      strSafeRouteSide = 'oeste';
     }
 
     // creo el texto de la ruta segura
