@@ -14,7 +14,8 @@ var WebSocketIDs = {
   ShipsCollided: 'shipsCollided',
   ShipShot: 'shipShot',
   GameOver: 'gameOver',
-  GamePaused: 'gamePaused'
+  GamePaused: 'gamePaused',
+  ShipLeft: 'shipLeft'
 };
 
 var GameResults = {
@@ -40,7 +41,10 @@ var Strings = {
   PlayerKilled: 'Te han destruido.',
   ShipKilledSubmarine: 'El submarino ha sido destruido.',
   ShipKilledBlue: 'El carguero azul ha sido destruido.',
-  ShipKilledGreen: 'El carguero verde ha sido destruido.'
+  ShipKilledGreen: 'El carguero verde ha sido destruido.',
+  SubmarineLeft: 'El submarino abandono la partida.',
+  ShipBlueLeft: 'El carguero azul abandono la patida.',
+  ShipGreenLeft: 'El carguero verde abandono la partida.'
 }
 
 function getParameterByName(name, url) {
@@ -398,6 +402,27 @@ var app = (function  () {
             toggleGameOver();
             break;
 
+          //Si un jugador cierra la sesion, debe de morir su nave.  
+          case WebSocketIDs.ShipLeft:
+            switch (jsonMsg.name) {
+              case ShipsType.Submarine: 
+                submarine.el.kill();
+                submarine.state = ShipStates.Destroyed;
+                $('#hud #messages').text(Strings.SubmarineLeft);
+                //ENVIO
+              break;
+              case ShipsType.Blue:
+                blue.el.kill();
+                blue.state = ShipStates.Destroyed;
+                $('#hud #messages').text(Strings.ShipBlueLeft);
+              break;
+              case ShipsType.Green:
+                green.el.kill();
+                green.state = ShipStates.Destroyed;
+                $('#hud #messages').text(Strings.ShipGreenLeft);
+              break;       
+            } 
+           break; 
           // Update pausa
           case WebSocketIDs.GamePaused:
           console.log("Pausa " + jsonMsg.user);
@@ -686,13 +711,6 @@ function update() {
         $('#hud #messages').text(Strings.ShipArrivedGreen);
       });
 
-      /* --------------------- */
-
-      var gameOver = checkGameOver();
-      if (gameOver != null) {
-        webSocket.sendMessage(gameOver);
-        toggleGameOver();
-      }
 
     } else {
       game.physics.arcade.overlap(submarine.missile, green.el, function() { submarine.missile.kill(); });
@@ -706,8 +724,13 @@ function update() {
     }
 
     ship.update(cursors);
+    //Cada jugador valida si se termino el juego
+    var gameOver = checkGameOver();
+    if (gameOver != null) {
+      toggleGameOver();
+    }
   }
-
+  
   var setPlayerShip = function(_ship) {
     ship = _ship;
   };
