@@ -430,7 +430,7 @@ var app = (function  () {
                 $('#hud #messages').text(Strings.ShipGreenLeft);
               break;       
             } 
-           break; 
+            break; 
           // Update pausa
           case WebSocketIDs.GamePaused:
           console.log("Pausa " + jsonMsg.user);

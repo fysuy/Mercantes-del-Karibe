@@ -364,14 +364,11 @@ var ships = (function() {
 
       submarine = new Submarine(game, ShipsType.Submarine, x, y);
       var end = true;
-      game.physics.arcade.overlap(islands, submarine.el, function() {
-        console.log (submarine.el.overlap(islands));
+      console.log (game.physics.arcade.overlap(islands, submarine.el));
+      if (game.physics.arcade.overlap(islands, submarine.el)) {
         submarine = null;
-        end = false;
-      });
-      if (end) {
+      } else {
         overlapsIsland = false;
-        game.physics.arcade.overlap(islands, submarine.el);
       }
       
     }
