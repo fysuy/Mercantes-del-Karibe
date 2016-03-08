@@ -28,18 +28,34 @@ var map = (function  () {
                               'water'); 
   };
 
-  var loadedPorts, loadedIslands;
+  var loadedPorts = [], loadedIslands = [];
 
-  var fromLoad = function(loadBtn) {
-    var uri = "rest/map/ports/" + (loadBtn ? 2 : 1);
-    $.get(uri, function(_ports) {
-      loadedPorts = _ports;
-    });
+  var fromLoad = function(loadBtn, callback) {
+    function getPorts() {
+      var uri = "rest/map/ports/" + (loadBtn ? 2 : 1);
+      $.get(uri, function(_ports) {
+        loadedPorts = _ports;
+      });
+    }
 
-    uri = "rest/map/islands/" + (loadBtn ? 2 : 1);
-    $.get(uri, function(_islands) {
-      loadedIslands = _islands;
+    function getIslands() {
+      uri = "rest/map/islands/" + (loadBtn ? 2 : 1);
+      return $.get(uri, function(_islands) {
+        loadedIslands = _islands;
+      });  
+    }
+
+    $.when(getIslands(), getPorts()).done(function() {
+      if(callback) { callback(); } 
     });
+  }
+
+  var getLoadedIslands = function() {
+    return loadedIslands;
+  }
+
+  var getLoadedPorts = function() {
+    return loadedPorts;
   }
 
   var generateCaribbean = function() {
@@ -97,7 +113,7 @@ var map = (function  () {
       $.post("rest/map/islands/1", JSON.stringify(islands));
 
     } else {
-      $.each(loadedIslands, function(i, island) {
+      $.each(getLoadedIslands(), function(i, island) {
         isl = game.add.tileSprite(island.x, island.y, island.width, island.height, 'island');
         game.physics.arcade.enable(isl);
         isl.body.immovable = true;

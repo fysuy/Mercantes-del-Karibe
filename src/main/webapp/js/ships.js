@@ -1,12 +1,10 @@
 var ships = (function() {
-  function Ship (game, type, x, y, nickname) {
+  function Ship (game, type, x, y) {
     this.game = game;
 
     this.dx = x;
     this.dy = y;
     this.dRotation = 0;
-
-    this.nickname = nickname;
 
     this.el = this.game.add.sprite(x, y, type);
     this.el.anchor.setTo(0.5, 0.5);
@@ -18,6 +16,8 @@ var ships = (function() {
     this.state = ShipStates.Alive;
 
     this.el.type = type;
+
+    this.bulletRange = 200;
 
     this.timer = this.game.time.create(false);
     this.timer.loop(1000, function() { this.allowSend = true; }, this);
@@ -55,7 +55,7 @@ var ships = (function() {
           }
           else if (cursors.up.isDown)
           {
-            if (this.el.type == ShipsType.submarine) {
+            if (this.el.type == ShipsType.Submarine) {
               this.el.currentSpeed = 300;
             } else {
               this.el.currentSpeed = 150;
@@ -122,7 +122,6 @@ var ships = (function() {
     this.lightRate = 500;
     this.lightTimer = 0;
 
-    this.fireRateBullet = 500;
     this.nextFire = 0;
 
     this.vision = game.add.graphics(-1000, -1000);
@@ -138,8 +137,9 @@ var ships = (function() {
       this.bulletLeft.exists = false;
       this.game.physics.arcade.enable(this.bulletLeft);
       this.bulletLeft.body.checkWorldBounds = true;
+      this.bulletLeft.startX;
+      this.bulletLeft.startY;
       this.bulletLeft.outOfBoundsKill = true;
-      this.bulletLeft.damage(1);
 
       // Creo la bala derecha
       this.bulletRight = this.game.add.sprite(0, 0, 'bullet');
@@ -147,6 +147,8 @@ var ships = (function() {
       this.bulletRight.exists = false;
       this.game.physics.arcade.enable(this.bulletRight);
       this.bulletRight.body.checkWorldBounds = true;
+      this.bulletRight.startX;
+      this.bulletRight.startY;
       this.bulletRight.outOfBoundsKill = true;
 
       // Fijo SPACEBAR como boton para disparar
@@ -170,10 +172,11 @@ var ships = (function() {
       }
     }
 
+    // Si no hay una bala disparada -> dispara
     if (this.el.type == ShipsType.Blue) {
       if (this.bulletButton.isDown) {
-        if (this.game.time.now > this.nextFire) {
-          this.nextFire = game.time.now + this.fireRateBullet;
+        if ((!(this.bulletLeft.exists) && !(this.bulletRight.exists))
+              || (!(this.bulletLeft.alive) && !(this.bulletRight.alive))) {
           this.fireBullet();
           this.updateBulletShot();
         }
@@ -227,21 +230,11 @@ var ships = (function() {
       this.game.physics.arcade.velocityFromRotation(this.el.rotation + gunLeft, 500, this.bulletLeft.body.velocity);
       this.game.physics.arcade.velocityFromRotation(this.el.rotation + gunRight, 500, this.bulletRight.body.velocity);
       
-      // Fijo el alcance de la bala izquierda
-      var tweenLeft = this.game.add.tween(this.bulletLeft).to(null, this.fireRateBullet, null, false, 0, 0, false);
-      var bulletLeft = this.bulletLeft;
-      tweenLeft.onComplete.add(function() {
-        bulletLeft.kill();
-      });
-      tweenLeft.start();
+      this.bulletLeft.startX = this.el.x;
+      this.bulletLeft.startY = this.el.y;
 
-      // Fijo el alcance de la bala derecha
-      var tweenRight = this.game.add.tween(this.bulletRight).to(null, this.fireRateBullet, null, false, 0, 0, false);
-      var bulletRight = this.bulletRight;
-      tweenRight.onComplete.add(function() {
-        bulletRight.kill();
-      });
-      tweenRight.start();
+      this.bulletRight.startX = this.el.x;
+      this.bulletRight.startY = this.el.y;
 
     }
   }
@@ -253,9 +246,9 @@ var ships = (function() {
     function Submarine (game, type, x, y) {
       Ship.call(this, game, type, x, y);
 
-      this.fireRateBullet = 500;
       this.nextFire = 0;
 
+      this.missileRange = this.bulletRange * 2;
       this.fireRateMissile = 4000;
       this.nextFireMissile = 0;
 
@@ -269,6 +262,8 @@ var ships = (function() {
       this.bullet.exists = false;
       this.game.physics.arcade.enable(this.bullet);
       this.bullet.body.checkWorldBounds = true;
+      this.bullet.startX;
+      this.bullet.startY;
       this.bullet.outOfBoundsKill = true;
 
       // Creo el misil
@@ -277,6 +272,8 @@ var ships = (function() {
       this.missile.exists = false;
       this.game.physics.arcade.enable(this.missile);
       this.missile.body.checkWorldBounds = true;
+      this.missile.startX;
+      this.missile.startY;
       this.missile.outOfBoundsKill = true;
 
       this.bulletButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -290,8 +287,8 @@ var ships = (function() {
     Ship.prototype.update.call(this, cursors);
 
     if (this.bulletButton.isDown) {
-      if (this.game.time.now > this.nextFire) {
-        this.nextFire = game.time.now + this.fireRateBullet;
+      if ((!(this.bullet.exists) && !(this.bullet.exists))
+            || (!(this.bullet.alive) && !(this.bullet.alive))) {
         this.fireBullet();
         this.updateBulletShot();
       }
@@ -326,18 +323,11 @@ var ships = (function() {
 
       this.bullet.reset(this.el.x, this.el.y);
       this.bullet.rotation = this.el.rotation;
+      this.bullet.startX = this.el.x;
+      this.bullet.startY = this.el.y;
 
       //  Disparo la bala considerando la direccion del barco
       this.game.physics.arcade.velocityFromRotation(this.el.rotation, 500, this.bullet.body.velocity);
-      
-      var tween = this.game.add.tween(this.bullet).to(null, this.fireRateBullet, null, false, 0, 0, false);
-      
-      var bullet = this.bullet;
-      tween.onComplete.add(function() {
-        bullet.kill();
-      });
-
-      tween.start();
     }
   }
 
@@ -348,18 +338,11 @@ var ships = (function() {
 
       this.missile.reset(this.el.x, this.el.y);
       this.missile.rotation = this.el.rotation;
+      this.missile.startX = this.el.x;
+      this.missile.startY = this.el.y;
 
       //  Disparo el misil en la direccion del barco
       this.game.physics.arcade.velocityFromRotation(this.el.rotation, 500, this.missile.body.velocity);
-      
-      var tween = this.game.add.tween(this.missile).to(null, 500, null, false, 0, 0, false);
-      
-      var missile = this.missile;
-      tween.onComplete.add(function() {
-        missile.kill();
-      });
-
-      tween.start();
     }
   }
 
@@ -372,35 +355,53 @@ var ships = (function() {
     });
   }
 
+  var getLoadedShips = function() {
+    return loadedShips;
+  }
+
   var init = function(_players, _game, _admin, _fromLoad) {
     game = _game;
 
     var caribbean = map.getCaribbean();
     var x, y;
+    
+    var overlapsIsland = true;
+    var islands = caribbean.islands;
 
     if (_fromLoad) {
-      $.each(loadedShips, function(i, ship) {
+      $.each(getLoadedShips(), function(i, ship) {
         if (ship.name == ShipsType.Submarine) {
           submarine = new Submarine(game, ShipsType.Submarine, ship.x, ship.y);
         }
 
         if (ship.name == ShipsType.Blue) {
-          blue = new Submarine(game, ShipsType.Blue, ship.x, ship.y);
+          blue = new CargoBoat(game, ShipsType.Blue, ship.x, ship.y);
         }
 
         if (ship.name == ShipsType.Green) {
-          green = new Submarine(game, ShipsType.Green, ship.x, ship.y);
+          green = new CargoBoat(game, ShipsType.Green, ship.x, ship.y);
         }
       });  
     } else {
-      x = game.rnd.between(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
-      y = game.rnd.between(caribbean.yTop, caribbean.yBottom);
-      submarine = new Submarine(game, ShipsType.Submarine, x, y);
+      // Crea el submarino chequeando que no este sobre una isla
+      while (overlapsIsland) {
+        x = game.rnd.between(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
+        y = game.rnd.between(caribbean.yTop + 72, caribbean.yBottom - 72);
 
-      blue = new CargoBoat(game, ShipsType.Blue, 500, 4700);
+        submarine = new Submarine(game, ShipsType.Submarine, x, y);
+        var end = true;
+
+        if (game.physics.arcade.overlap(islands, submarine.el)) {
+          submarine = null;
+        } else {
+          overlapsIsland = false;
+        }
+      }
+
+      blue = new CargoBoat(game, ShipsType.Blue, 500, 6700);
       blue.el.visible = false;
 
-      green = new CargoBoat(game, ShipsType.Green, 900, 4700);
+      green = new CargoBoat(game, ShipsType.Green, 900, 6700);
       green.el.visible = false;
 
       setTimeout(function() {
@@ -412,7 +413,7 @@ var ships = (function() {
         green.el.x = mvd.port.x - 300;
         green.el.y = mvd.port.y - 200;
         green.el.visible = true;
-      }, 5000);
+      }, 3000);
 
       if (_admin) {
         saveShips(_players, false);
