@@ -162,11 +162,13 @@ var app = (function  () {
                 if (player.role == ShipsType.Submarine) {
                   init(player.role);
                 } else {
-                  map.fromLoad(false, function() {
-                    setTimeout(function() {
-                      init(player.role); //Comienzo Juego
-                    }, 2000);       
-                  });
+                  setTimeout(function() {
+                    map.fromLoad(false, function() {
+                      setTimeout(function() {
+                        init(player.role); //Comienzo Juego
+                      }, 2000);       
+                    });
+                  }, 1000);
                 }         
               }
             });
