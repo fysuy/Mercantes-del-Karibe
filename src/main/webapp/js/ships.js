@@ -17,8 +17,10 @@ var ships = (function() {
 
     this.el.type = type;
 
+    this.bulletRange = 200;
+
     this.timer = this.game.time.create(false);
-    this.timer.loop(100, function() { this.allowSend = true; }, this);
+    this.timer.loop(1000, function() { this.allowSend = true; }, this);
 
     this.allowSend = false;
 
@@ -53,7 +55,7 @@ var ships = (function() {
           }
           else if (cursors.up.isDown)
           {
-            if (this.el.type == ShipsType.submarine) {
+            if (this.el.type == ShipsType.Submarine) {
               this.el.currentSpeed = 300;
             } else {
               this.el.currentSpeed = 150;
@@ -69,23 +71,24 @@ var ships = (function() {
 
         if (this.el.currentSpeed >= 0)
         {        
-          this.dx = Math.ceil(this.el.x);
-          this.dy = Math.ceil(this.el.y);
-          this.dRotation = Math.ceil(this.el.rotation);
-
           if (this.el.currentSpeed > 0) {
             this.el.currentSpeed -= 5;
             this.game.physics.arcade.velocityFromRotation(this.el.rotation, this.el.currentSpeed, this.el.body.velocity);
           }
         }
 
-        if (this.hasMoved && this.allowSend)  {
+        if (this.hasMoved() && this.allowSend)  {
+          this.dx = Math.ceil(this.el.x);
+          this.dy = Math.ceil(this.el.y);
+          this.dRotation = Math.ceil(this.el.rotation);
+
           var message = {
             id: WebSocketIDs.UpdateCoordinates,
             x: this.el.x,
             y: this.el.y,
             rotation: this.el.rotation
           };
+
           webSocket.sendMessage(message);
           this.allowSend = false;
         }
@@ -119,7 +122,6 @@ var ships = (function() {
     this.lightRate = 500;
     this.lightTimer = 0;
 
-    this.fireRateBullet = 500;
     this.nextFire = 0;
 
     this.vision = game.add.graphics(-1000, -1000);
@@ -135,8 +137,9 @@ var ships = (function() {
       this.bulletLeft.exists = false;
       this.game.physics.arcade.enable(this.bulletLeft);
       this.bulletLeft.body.checkWorldBounds = true;
+      this.bulletLeft.startX;
+      this.bulletLeft.startY;
       this.bulletLeft.outOfBoundsKill = true;
-      this.bulletLeft.damage(1);
 
       // Creo la bala derecha
       this.bulletRight = this.game.add.sprite(0, 0, 'bullet');
@@ -144,6 +147,8 @@ var ships = (function() {
       this.bulletRight.exists = false;
       this.game.physics.arcade.enable(this.bulletRight);
       this.bulletRight.body.checkWorldBounds = true;
+      this.bulletRight.startX;
+      this.bulletRight.startY;
       this.bulletRight.outOfBoundsKill = true;
 
       // Fijo SPACEBAR como boton para disparar
@@ -167,10 +172,11 @@ var ships = (function() {
       }
     }
 
+    // Si no hay una bala disparada -> dispara
     if (this.el.type == ShipsType.Blue) {
       if (this.bulletButton.isDown) {
-        if (this.game.time.now > this.nextFire) {
-          this.nextFire = game.time.now + this.fireRateBullet;
+        if ((!(this.bulletLeft.exists) && !(this.bulletRight.exists))
+              || (!(this.bulletLeft.alive) && !(this.bulletRight.alive))) {
           this.fireBullet();
           this.updateBulletShot();
         }
@@ -224,21 +230,11 @@ var ships = (function() {
       this.game.physics.arcade.velocityFromRotation(this.el.rotation + gunLeft, 500, this.bulletLeft.body.velocity);
       this.game.physics.arcade.velocityFromRotation(this.el.rotation + gunRight, 500, this.bulletRight.body.velocity);
       
-      // Fijo el alcance de la bala izquierda
-      var tweenLeft = this.game.add.tween(this.bulletLeft).to(null, this.fireRateBullet, null, false, 0, 0, false);
-      var bulletLeft = this.bulletLeft;
-      tweenLeft.onComplete.add(function() {
-        bulletLeft.kill();
-      });
-      tweenLeft.start();
+      this.bulletLeft.startX = this.el.x;
+      this.bulletLeft.startY = this.el.y;
 
-      // Fijo el alcance de la bala derecha
-      var tweenRight = this.game.add.tween(this.bulletRight).to(null, this.fireRateBullet, null, false, 0, 0, false);
-      var bulletRight = this.bulletRight;
-      tweenRight.onComplete.add(function() {
-        bulletRight.kill();
-      });
-      tweenRight.start();
+      this.bulletRight.startX = this.el.x;
+      this.bulletRight.startY = this.el.y;
 
     }
   }
@@ -250,9 +246,9 @@ var ships = (function() {
     function Submarine (game, type, x, y) {
       Ship.call(this, game, type, x, y);
 
-      this.fireRateBullet = 500;
       this.nextFire = 0;
 
+      this.missileRange = this.bulletRange * 2;
       this.fireRateMissile = 4000;
       this.nextFireMissile = 0;
 
@@ -266,6 +262,8 @@ var ships = (function() {
       this.bullet.exists = false;
       this.game.physics.arcade.enable(this.bullet);
       this.bullet.body.checkWorldBounds = true;
+      this.bullet.startX;
+      this.bullet.startY;
       this.bullet.outOfBoundsKill = true;
 
       // Creo el misil
@@ -274,6 +272,8 @@ var ships = (function() {
       this.missile.exists = false;
       this.game.physics.arcade.enable(this.missile);
       this.missile.body.checkWorldBounds = true;
+      this.missile.startX;
+      this.missile.startY;
       this.missile.outOfBoundsKill = true;
 
       this.bulletButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -287,8 +287,8 @@ var ships = (function() {
     Ship.prototype.update.call(this, cursors);
 
     if (this.bulletButton.isDown) {
-      if (this.game.time.now > this.nextFire) {
-        this.nextFire = game.time.now + this.fireRateBullet;
+      if ((!(this.bullet.exists) && !(this.bullet.exists))
+            || (!(this.bullet.alive) && !(this.bullet.alive))) {
         this.fireBullet();
         this.updateBulletShot();
       }
@@ -323,18 +323,11 @@ var ships = (function() {
 
       this.bullet.reset(this.el.x, this.el.y);
       this.bullet.rotation = this.el.rotation;
+      this.bullet.startX = this.el.x;
+      this.bullet.startY = this.el.y;
 
       //  Disparo la bala considerando la direccion del barco
       this.game.physics.arcade.velocityFromRotation(this.el.rotation, 500, this.bullet.body.velocity);
-      
-      var tween = this.game.add.tween(this.bullet).to(null, this.fireRateBullet, null, false, 0, 0, false);
-      
-      var bullet = this.bullet;
-      tween.onComplete.add(function() {
-        bullet.kill();
-      });
-
-      tween.start();
     }
   }
 
@@ -345,78 +338,124 @@ var ships = (function() {
 
       this.missile.reset(this.el.x, this.el.y);
       this.missile.rotation = this.el.rotation;
+      this.missile.startX = this.el.x;
+      this.missile.startY = this.el.y;
 
       //  Disparo el misil en la direccion del barco
       this.game.physics.arcade.velocityFromRotation(this.el.rotation, 500, this.missile.body.velocity);
-      
-      var tween = this.game.add.tween(this.missile).to(null, 500, null, false, 0, 0, false);
-      
-      var missile = this.missile;
-      tween.onComplete.add(function() {
-        missile.kill();
-      });
-
-      tween.start();
     }
   }
 
   // Variables de los barcos
-  var submarine, blue, green, game;
+  var submarine, blue, green, game, loadedShips;
 
-  var init = function(_game, _admin) {
+  var fromLoad = function() {
+    $.get("rest/ships/2", function(_ships) {
+      loadedShips = _ships;
+    });
+  }
+
+  var getLoadedShips = function() {
+    return loadedShips;
+  }
+
+  var init = function(_players, _game, _admin, _fromLoad) {
     game = _game;
 
     var caribbean = map.getCaribbean();
     var x, y;
+    
+    var overlapsIsland = true;
+    var islands = caribbean.islands;
 
-    x = game.rnd.between(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
-    y = game.rnd.between(caribbean.yTop, caribbean.yBottom);
-    submarine = new Submarine(game, ShipsType.Submarine, x, y);
+    if (_fromLoad) {
+      $.each(getLoadedShips(), function(i, ship) {
+        if (ship.name == ShipsType.Submarine) {
+          submarine = new Submarine(game, ShipsType.Submarine, ship.x, ship.y);
+        }
 
-    blue = new CargoBoat(game, ShipsType.Blue, 500, 4700);
-    blue.el.visible = false;
+        if (ship.name == ShipsType.Blue) {
+          blue = new CargoBoat(game, ShipsType.Blue, ship.x, ship.y);
+        }
 
-    green = new CargoBoat(game, ShipsType.Green, 900, 4700);
-    green.el.visible = false;
+        if (ship.name == ShipsType.Green) {
+          green = new CargoBoat(game, ShipsType.Green, ship.x, ship.y);
+        }
+      });  
+    } else {
+      // Crea el submarino chequeando que no este sobre una isla
+      while (overlapsIsland) {
+        x = game.rnd.between(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
+        y = game.rnd.between(caribbean.yTop + 72, caribbean.yBottom - 72);
 
-    setTimeout(function() {
-      var mvd = map.getMvd();
-      blue.el.x = mvd.port.x - 100;
-      blue.el.y = mvd.port.y - 200;
-      blue.el.visible = true;
+        submarine = new Submarine(game, ShipsType.Submarine, x, y);
+        var end = true;
 
-      green.el.x = mvd.port.x - 300;
-      green.el.y = mvd.port.y - 200;
-      green.el.visible = true;
-    }, 5000);
+        if (game.physics.arcade.overlap(islands, submarine.el)) {
+          submarine = null;
+        } else {
+          overlapsIsland = false;
+        }
+      }
 
-    if (_admin) {
-      saveShips(false);
+      blue = new CargoBoat(game, ShipsType.Blue, 500, 6700);
+      blue.el.visible = false;
+
+      green = new CargoBoat(game, ShipsType.Green, 900, 6700);
+      green.el.visible = false;
+
+      setTimeout(function() {
+        var mvd = map.getMvd();
+        blue.el.x = mvd.port.x - 100;
+        blue.el.y = mvd.port.y - 200;
+        blue.el.visible = true;
+
+        green.el.x = mvd.port.x - 300;
+        green.el.y = mvd.port.y - 200;
+        green.el.visible = true;
+      }, 3000);
+
+      if (_admin) {
+        saveShips(_players, false);
+      }
     }
   };
 
-  var saveShips = function(fromSaveBtn) {
+  var saveShips = function(players, fromSaveBtn) {
+    var getNicknameByRole = function (players, role) {
+      var nickname;
+      $.each(players, function(i, p) {
+        if (p.role == role) {
+          nickname = p.name;
+        }
+      });
+      return nickname;
+    }
+
     var ships = [
       { 
         name: ShipsType.Submarine, 
         x: Math.floor(submarine.el.x),  
         y: Math.floor(submarine.el.y),
         rotation: Math.floor(submarine.el.rotation),
-        health: submarine.el.health
+        health: submarine.el.health,
+        nickname: getNicknameByRole(players, ShipsType.Submarine)
       },
       {
         name: ShipsType.Blue, 
         x: Math.floor(blue.el.x),  
         y: Math.floor(blue.el.y),
         rotation: Math.floor(blue.el.rotation),
-        health: blue.el.health
+        health: blue.el.health,
+        nickname: getNicknameByRole(players, ShipsType.Blue)
       },
       {
         name: ShipsType.Green, 
         x: Math.floor(green.el.x),  
         y: Math.floor(green.el.y),
         rotation: Math.floor(green.el.rotation),
-        health: green.el.health
+        health: green.el.health,
+        nickname: getNicknameByRole(players, ShipsType.Green)
       }
     ];
 
@@ -448,6 +487,7 @@ var ships = (function() {
     getSubmarine: getSubmarine,
     getBlue: getBlue,
     getGreen: getGreen,
-    saveShips: saveShips
+    saveShips: saveShips,
+    fromLoad: fromLoad
   }
 })();

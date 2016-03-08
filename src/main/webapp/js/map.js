@@ -28,6 +28,36 @@ var map = (function  () {
                               'water'); 
   };
 
+  var loadedPorts = [], loadedIslands = [];
+
+  var fromLoad = function(loadBtn, callback) {
+    function getPorts() {
+      var uri = "rest/map/ports/" + (loadBtn ? 2 : 1);
+      $.get(uri, function(_ports) {
+        loadedPorts = _ports;
+      });
+    }
+
+    function getIslands() {
+      uri = "rest/map/islands/" + (loadBtn ? 2 : 1);
+      return $.get(uri, function(_islands) {
+        loadedIslands = _islands;
+      });  
+    }
+
+    $.when(getIslands(), getPorts()).done(function() {
+      if(callback) { callback(); } 
+    });
+  }
+
+  var getLoadedIslands = function() {
+    return loadedIslands;
+  }
+
+  var getLoadedPorts = function() {
+    return loadedPorts;
+  }
+
   var generateCaribbean = function() {
     // Pinta la zona del caribe
     caribbeanPaint = game.add.graphics(0, 0); 
@@ -42,12 +72,12 @@ var map = (function  () {
     $.post("rest/map/ports/2", JSON.stringify(ports));
   };
 
-  var generateIslands = function(_admin) {
+  var generateIslands = function(_admin, _fromLoad) {
     var island;
 
     caribbean.islands = game.add.group();
 
-    if (_admin) {
+    if (_admin && !_fromLoad) {
       // Seteo un valor random con la cantidad de islas
       var numberOfIslands = game.rnd.integerInRange(25, 40);
       
@@ -83,24 +113,21 @@ var map = (function  () {
       $.post("rest/map/islands/1", JSON.stringify(islands));
 
     } else {
-      $.get("rest/map/islands/1", function(_islands) {
-        islands = _islands;
-        $.each(_islands, function(i, island) {
-          isl = game.add.tileSprite(island.x, island.y, island.width, island.height, 'island');
-          game.physics.arcade.enable(isl);
-          isl.body.immovable = true;
-          isl.anchor.setTo(0.5, 0.5);
-          caribbean.islands.add(isl);
-        });
+      $.each(getLoadedIslands(), function(i, island) {
+        isl = game.add.tileSprite(island.x, island.y, island.width, island.height, 'island');
+        game.physics.arcade.enable(isl);
+        isl.body.immovable = true;
+        isl.anchor.setTo(0.5, 0.5);
+        caribbean.islands.add(isl);
       });
     }
   }
 
-  var generatePorts = function(_admin) {
+  var generatePorts = function(_admin, _fromLoad) {
     var deferred = $.Deferred();
     var xNyPort, xMvdPort;
 
-    if (_admin) {
+    if (_admin && !_fromLoad) {
       xNyPort = game.rnd.between(worldBounds.xTopLeft, worldBounds.xBottomRight - 440);
       xMvdPort = game.rnd.between(worldBounds.xTopLeft + 440, worldBounds.xBottomRight);
 
@@ -112,17 +139,14 @@ var map = (function  () {
       $.post("rest/map/ports/1", JSON.stringify(ports));
       deferred.resolve(xNyPort, xMvdPort);
     } else {
-      $.get("rest/map/ports/1", function(_ports) {
-        ports = _ports;
-        $.each(_ports, function(i, port) {
-          switch(port.name) {
-            case 'ny': xNyPort = port.x; break;
-            case 'mvd': xMvdPort = port.x; break;
-          }
-        });
-
-        deferred.resolve(xNyPort, xMvdPort);
+      $.each(loadedPorts, function(i, port) {
+        switch(port.name) {
+          case 'ny': xNyPort = port.x; break;
+          case 'mvd': xMvdPort = port.x; break;
+        }
       });
+
+      deferred.resolve(xNyPort, xMvdPort);
     }
 
     ny = {}, mvd = {};
@@ -191,7 +215,7 @@ var map = (function  () {
     });   
   };
 
-  var init = function (_game, _admin) {
+  var init = function (_game, _admin, _fromLoad) {
     game = _game;
 
     game.stage.backgroundColor = '#0F3763';
@@ -202,8 +226,8 @@ var map = (function  () {
 
     generateSea();
     generateCaribbean();
-    generateIslands(_admin);
-    generatePorts(_admin);
+    generateIslands(_admin, _fromLoad);
+    generatePorts(_admin, _fromLoad);
   };
 
   // Selectoras para los objetos
@@ -217,6 +241,7 @@ var map = (function  () {
     getCaribbean: getCaribbean,
     getNY: getNY,
     getMvd: getMvd,
-    saveMap: saveMap
+    saveMap: saveMap,
+    fromLoad: fromLoad
   }
 })();

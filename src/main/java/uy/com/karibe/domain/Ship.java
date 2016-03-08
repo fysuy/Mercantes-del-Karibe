@@ -16,6 +16,7 @@ public class Ship {
 	private int y;
 	private int rotation;
 	private int health;
+	private String nickname;
 	
 	public int getGameId() {
 		return gameId;
@@ -60,13 +61,22 @@ public class Ship {
 	public void setHealth(int health) {
 		this.health = health;
 	}
+	
+	public String getNickname() {
+		return nickname;
+	}
 
-	public Ship(int gameId, String name, int x, int y, int rotation, int health) {
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public Ship(int gameId, String name, int x, int y, int rotation, int health, String nickname) {
 		this.gameId = gameId;
 		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.rotation = rotation;
 		this.health = health;
+		this.nickname = nickname;
 	}
 }

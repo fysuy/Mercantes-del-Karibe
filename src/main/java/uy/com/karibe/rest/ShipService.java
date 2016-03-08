@@ -14,18 +14,19 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.inject.Singleton;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.google.gson.Gson;
 import com.mysql.jdbc.Connection;
 
 import uy.com.karibe.access.DatabaseAccess;
+import uy.com.karibe.domain.Player;
 import uy.com.karibe.domain.Ship;
 
 @Path("/ships")
@@ -51,6 +52,25 @@ public class ShipService {
 	public String getShips (@PathParam("gId") int gameId) {
 		List<Ship> ships = DatabaseAccess.selectShips(con, gameId);
 		return new Gson().toJson(ships);
+	}
+	
+	@GET
+	@Path("getRoleByNickname/{gId}/{nickname}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getRoleByNickname (@PathParam("gId") int gameId, 
+			@PathParam("nickname") String nickname) {
+		String role = DatabaseAccess.getRoleByNickname(con, gameId, nickname);
+		return role;
+	}
+	
+	@POST
+	@Path("updateNicknames/{gId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void updateNicknameByRole (@PathParam("gId") int gameId, String message) {
+		Player[] players = new Gson().fromJson(message, Player[].class);
+		for (Player player : players) {
+			DatabaseAccess.updateNicknameByRole(con, gameId, player.getName(), player.getRole());	
+		}
 	}
 	
 	@POST

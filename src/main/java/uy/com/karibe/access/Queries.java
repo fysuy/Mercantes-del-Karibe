@@ -36,7 +36,7 @@ public class Queries {
 	}
 	
 	public static String insertShip() {
-		String s = "insert into mdk.ships(name, x, y, rotation, health, gameId) values (?, ?, ?, ?, ?, ?)";
+		String s = "insert into mdk.ships(name, x, y, rotation, health, gameId, nickname) values (?, ?, ?, ?, ?, ?, ?)";
 		return s;
 	}
 	
@@ -52,6 +52,16 @@ public class Queries {
 	
 	public static String selectShips() {
 		String s = "select * from mdk.ships where gameId = ?";
+		return s;
+	}
+	
+	public static String getRoleByNickname() {
+		String s = "select name from mdk.ships where nickname = ? and gameId = ?";
+		return s;
+	}
+	
+	public static String updateNicknameByRole() {
+		String s = "update mdk.ships set nickname = ? where name = ? and gameId = ?";
 		return s;
 	}
 }

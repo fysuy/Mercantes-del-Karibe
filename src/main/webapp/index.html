@@ -12,101 +12,139 @@
   <script type="text/javascript" src="js/app.js"></script>
 </head>
 <body>
-  <div id="game-title" class="row text-center">
-    <img src="assets/title-mdk.png" />
-  </div>
-
-  <div class="row main-menu">
-    <div class="col-xs-12">
-      <div class="text-center">
-        <a href="#" class="button-style button-fixed-size button-yellow button-play">
-          <p class="button-text">Jugar</p>
-        </a>
-      </div>
-      <div class="text-center">
-        <a href="#" class="button-style button-fixed-size button-locked">
-          <p class="button-text">Reanudar</p>
-        </a>
-      </div>
-      <div class="text-center">
-        <a href="help.html" class="button-style button-fixed-size button-yellow">
-          <p class="button-text">Ayuda</p>
-        </a>
-      </div>
+  <div class="container">
+    <div id="game-title" class="row text-center">
+      <img src="assets/title-mdk.png" />
     </div>
-  </div>
 
-  <div class="row insert-nickname">
-    <div class="col-xs-12">
-      <label for="insert-nickname">Apodo</label>
-      <input type="text" name="insert-nickname" id="insert-nickname" class="text-frame text-black"/>
-    </div>
-    <div class="row col-xs-12 position-absolute bottom">
-      <a href="#" class="button-style button-content-size button-yellow button-bottom float-left">
-        <p class="button-text button-prev">Volver</p>
-      </a>
-      <a href="#" class="button-style button-content-size button-green button-bottom float-right">
-        <p class="button-text button-next">Siguiente</p>
-      </a>
-    </div>
-  </div>
-
-  <div class="row text-center select-sides">
-
-    <div class="col-xs-12">
-      <p>Jugadores conectados:</p>
-      <ul id="players-list" style="list-style: none;"></ul>
-    </div>
-  </div>
-
-  <div class="row">
-    <div id="game-container">
-      <!-- RUTA SEGURA -->
-      <div id="safe-route-dialog">
-        <div class="game-title row text-center">
-          <img src="assets/title-safe-route.png" />
-        </div>
-        <div>
-          <img src="" />
-          <div class="text-frame text-left">
-            <p id="submarine-spotted" class="text-black"></p>
-            <p id="safe-route" class="text-yellow"></p>
-          </div>
-        </div>
-        <!-- boton cerrar -->
-        <a href="#" class="button-style button-content-size button-green">
-          <p class="button-text" id="btn-route-ok">Entendido</p>
-        </a>
-      </div>
-
-      <!-- FIN RUTA SEGURA -->
-
-      <!-- PAUSA -->
-      <div id="menu-pause">
-        <div class="game-title row text-center">
-          <img src="assets/title-pause.png" />
-        </div>  
-        <p id="paused-by"></p>
+    <div class="row main-menu">
+      <div class="col-xs-12">
         <div class="text-center">
-          <div class="row text-center">
-            <a href="#" id="btn-save" class="button-style button-fixed-size button-yellow">
-              <p class="button-text">Guardar partida</p>
-            </a>
-          </div>
-          <div class="text-center">
-            <a href="" class="button-style button-fixed-size button-yellow">
-              <p class="button-text">Abandonar partida</p>
-            </a>
-          </div>
-          <div class="text-center">
-            <a href="help.html" target="_blank" class="button-style button-fixed-size button-yellow">
-              <p class="button-text">Ayuda</p>
-            </a>
-          </div>
+          <a href="#" class="button-style button-fixed-size button-yellow button-play">
+            <p class="button-text">Jugar</p>
+          </a>
+        </div>
+        <div class="text-center">
+          <a href="#" class="button-style button-fixed-size button-locked">
+          <p class="button-text" id="btn-load-game">Reanudar</p>
+          </a>
+        </div>
+        <div class="text-center">
+          <a href="help.html" class="button-style button-fixed-size button-yellow">
+            <p class="button-text">Ayuda</p>
+          </a>
         </div>
       </div>
-      <!-- FIN PAUSA -->
+    </div>
+
+    <div class="row insert-nickname">
+      <div class="col-xs-12">
+        <label for="insert-nickname">Apodo</label>
+      <input type="text" name="insert-nickname" id="insert-nickname" 
+        class="text-frame text-black"/>
+      </div>
+      <div class="container position-absolute bottom">
+        <a href="#" class="button-style button-content-size button-yellow button-bottom float-left">
+          <p class="button-text button-prev">Volver</p>
+        </a>
+        <a href="#" class="button-style button-content-size button-green button-bottom float-right">
+          <p class="button-text button-next">Siguiente</p>
+        </a>
+      </div>
+    </div>
+
+    <div id="select-sides" class="row text-center select-sides">
+
+      <div class="col-xs-12">
+        <p>Jugadores conectados:</p>
+        <ul id="players-list" style="list-style: none;"></ul>
+      </div>
     </div>
   </div>
+  
+  <div id="game-container">
+    <!-- RUTA SEGURA -->
+    <div id="safe-route-dialog">
+      <div class="game-title text-center">
+        <img src="assets/title-safe-route.png" />
+      </div>
+      <div>
+        <img src="" />
+        <div class="text-frame text-left">
+          <p id="submarine-spotted" class="text-black"></p>
+          <p id="safe-route" class="text-yellow"></p>
+        </div>
+      </div>
+      <!-- boton cerrar -->
+      <a class="button-style button-content-size button-green">
+        <p id="button-close-safe-route" class="button-text">Entendido</p>
+      </a>
+    </div>
+
+    <!-- FIN RUTA SEGURA -->
+
+    <!-- GAME OVER -->
+    <div id="menu-game-over">
+      <div class="game-title text-center">
+        <img src="assets/title-game-over.png" />
+      </div>  
+
+      <div class="text-center">
+        <div class="container text-center">
+          <p id="game-result" class="margin-bottom text-black"></p>
+
+          <h2 class="underline margin-bottom">Resumen</h2>
+
+          <div>
+            <p class="inline-block">Submarino: </p>
+            <p id="submarine-state" class="margin-left inline-block"></p>
+          </div>
+
+          <div>
+            <p class="inline-block">Carguero azul: </p>
+            <p id="blue-state" class="margin-left inline-block"></p>
+          </div>
+
+          <div>
+            <p class="inline-block">Carguero verde: </p>
+            <p id="green-state" class="margin-left inline-block"></p>
+          </div>
+        </div>
+        <div class="col-xs-12 text-center position-absolute margin-bottom bottom">
+          <a href="" class="button-style button-fixed-size button-green">
+            <p class="button-text">Listo</p>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- FIN GAME OVER -->
+
+    <!-- PAUSA -->
+    <div id="menu-pause">
+      <div class="game-title text-center">
+        <img src="assets/title-pause.png" />
+      </div>  
+      <p id="paused-by"></p>
+      <div class="text-center">
+        <div class="text-center">
+          <a href="#" id="btn-save" class="button-style button-fixed-size button-yellow">
+            <p class="button-text">Guardar partida</p>
+          </a>
+        </div>
+        <div class="text-center">
+          <a href="" class="button-style button-fixed-size button-yellow">
+            <p class="button-text">Abandonar partida</p>
+          </a>
+        </div>
+        <div class="text-center">
+          <a href="help.html" target="_blank" class="button-style button-fixed-size button-yellow">
+            <p class="button-text">Ayuda</p>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- FIN PAUSA -->
+  </div>
+
 </body>
 </html>
