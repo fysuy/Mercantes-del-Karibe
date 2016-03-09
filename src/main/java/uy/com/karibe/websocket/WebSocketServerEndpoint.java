@@ -78,38 +78,43 @@ public class WebSocketServerEndpoint {
 		
 		roles.remove(role);
 		
+		//Se obtienen los usuarios conectados
+		String usersConnected = "";
+		Player _p;
+		
+		for (Iterator<Player> iterator = players.iterator(); iterator.hasNext(); ) {
+		    _p = iterator.next();
+		    usersConnected += "<li>" + _p.getName() + "</li>";
+		}
+		
+		JsonMsg jsonMsg = new JsonMsg("setUsersConnected", "", usersConnected);
+
+		sendMessageToAll(new Gson().toJson(jsonMsg), session, true);
+		
 		if(roles.size() == 0) {
 			JsonMsg initMsg = new JsonMsg("initGame", "", new Gson().toJson(players));
 			sendMessageToAll(new Gson().toJson(initMsg), session, true);
-		} else {
-			//Se obtienen los usuarios conectados
-			String usersConnected = "";
-			Player _p;
-			
-			for (Iterator<Player> iterator = players.iterator(); iterator.hasNext(); ) {
-			    _p = iterator.next();
-			    usersConnected += "<li>" + _p.getName() + "</li>";
-			}
-			
-			JsonMsg jsonMsg = new JsonMsg("setUsersConnected", "", usersConnected);
-	
-			sendMessageToAll(new Gson().toJson(jsonMsg), session, true);
 		}
 	}
 
 	@OnClose
 	synchronized public void onClose(Session session){		
-		//Al cerrar la ventana del navegador, el usuario se elimina de la sesion.
-		sessions.remove(session);
-		
-		for (Iterator<Player> iterator = players.iterator(); iterator.hasNext(); ) {
-		    Player p = iterator.next();
-		    if(p.getSessionId() == session.getId()) {
-		    	roles.add(p.getRole());
-		    	players.remove(p);
-				JsonMsg shipDeadMsg = new JsonMsg("shipLeft", p.getRole() , "true");
-				sendMessageToAll(new Gson().toJson(shipDeadMsg), session, false);
+		try {
+			//Al cerrar la ventana del navegador, el usuario se elimina de la sesion.
+			sessions.remove(session);
+			Player p;
+			
+			for (Iterator<Player> iterator = players.iterator(); iterator.hasNext(); ) {
+			    p = iterator.next();
+			    if(p.getSessionId() == session.getId()) {
+			    	roles.add(p.getRole());
+			    	iterator.remove();
+					JsonMsg shipDeadMsg = new JsonMsg("shipLeft", p.getRole() , "true");
+					sendMessageToAll(new Gson().toJson(shipDeadMsg), session, false);
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

@@ -155,29 +155,33 @@ var app = (function  () {
         }
 
         if (jsonMsg.id == "initGame") {
-          players = JSON.parse(jsonMsg.message);
+          setTimeout(function() {
+            players = JSON.parse(jsonMsg.message);
 
-          $.each(players, function(i, player) {
-            if (player.name == nickname) {
-              shipType = player.role;
+            $.each(players, function(i, player) {
+              if (player.name == nickname) {
+                shipType = player.role;
 
-              // Seteo el rol del jugador para los mensajes
-              // que seran enviados por el websocket
-              webSocket.setUser(shipType);
+                // Seteo el rol del jugador para los mensajes
+                // que seran enviados por el websocket
+                webSocket.setUser(shipType);
 
-              if (shipType == ShipsType.Submarine && !fromLoad) {
-                $.when(map.generateIslands(), map.generatePorts()).done(function() {
-                  init();                 
-                });
-              } else {
-                $.when(map.getPorts(), map.getIslands()).done(function() {
-                  ships.getShips().done(function() {
-                    init();
-                  });   
-                });
+                if (shipType == ShipsType.Submarine && !fromLoad) {
+                  $.when(map.generateIslands(), map.generatePorts()).done(function() {
+                    init();                 
+                  });
+                } 
+
+                if (fromLoad) {
+                  $.when(map.getPorts(), map.getIslands()).done(function() {
+                    ships.getShips().done(function() {
+                      init();
+                    });   
+                  });
+                }
               }
-            }
-          });
+            });
+          }, 2000);
         }
       });
     });
