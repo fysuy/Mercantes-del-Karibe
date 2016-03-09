@@ -45,7 +45,8 @@ public class Main {
 
 			/* creo la tabla para los juegos */
 			String games = "CREATE TABLE mdk.game "
-					+ "(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT)";
+					+ "(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, "
+					+ "code varchar(10))";
 			pstmt = (PreparedStatement) con.prepareStatement(games);
 			pstmt.executeUpdate();
 			pstmt.close();

@@ -20,7 +20,7 @@ var ships = (function() {
     this.bulletRange = 200;
 
     this.timer = this.game.time.create(false);
-    this.timer.loop(1000, function() { this.allowSend = true; }, this);
+    this.timer.loop(200, function() { this.allowSend = true; }, this);
 
     this.allowSend = false;
 
@@ -347,81 +347,83 @@ var ships = (function() {
   }
 
   // Variables de los barcos
-  var submarine, blue, green, game, loadedShips;
+  var submarine, blue, green, game, gameId, loadedShips;
 
-  var fromLoad = function() {
-    $.get("rest/ships/2", function(_ships) {
-      loadedShips = _ships;
+  var getShips = function() {
+    var url = "rest/ships/" + gameId;
+    return $.get(url, function(response) {
+      loadedShips = response;
     });
   }
 
-  var getLoadedShips = function() {
-    return loadedShips;
+  var appendShips = function() {
+    $.each(loadedShips, function(i, ship) {
+      if (ship.name == ShipsType.Submarine) {
+        submarine = new Submarine(game, ShipsType.Submarine, ship.x, ship.y);
+      }
+
+      if (ship.name == ShipsType.Blue) {
+        blue = new CargoBoat(game, ShipsType.Blue, ship.x, ship.y);
+      }
+
+      if (ship.name == ShipsType.Green) {
+        green = new CargoBoat(game, ShipsType.Green, ship.x, ship.y);
+      }
+    }); 
   }
 
-  var init = function(_players, _game, _admin, _fromLoad) {
-    game = _game;
+  var generateShips = function(players) {
+    var deferred = $.Deferred();
 
+    var ports = map.getLoadedPorts();
     var caribbean = map.getCaribbean();
-    var x, y;
-    
+    var x, y, mvd = {};
+
     var overlapsIsland = true;
     var islands = caribbean.islands;
 
-    if (_fromLoad) {
-      $.each(getLoadedShips(), function(i, ship) {
-        if (ship.name == ShipsType.Submarine) {
-          submarine = new Submarine(game, ShipsType.Submarine, ship.x, ship.y);
-        }
-
-        if (ship.name == ShipsType.Blue) {
-          blue = new CargoBoat(game, ShipsType.Blue, ship.x, ship.y);
-        }
-
-        if (ship.name == ShipsType.Green) {
-          green = new CargoBoat(game, ShipsType.Green, ship.x, ship.y);
-        }
-      });  
-    } else {
-      // Crea el submarino chequeando que no este sobre una isla
-      while (overlapsIsland) {
-        x = game.rnd.between(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
-        y = game.rnd.between(caribbean.yTop + 72, caribbean.yBottom - 72);
-
-        submarine = new Submarine(game, ShipsType.Submarine, x, y);
-        var end = true;
-
-        if (game.physics.arcade.overlap(islands, submarine.el)) {
-          submarine = null;
-        } else {
-          overlapsIsland = false;
-        }
+    $.each(ports, function(i, port) {
+      if (port.name == "mvd") {
+        mvd.x = port.x;
+        mvd.y = map.worldBounds.yBottomRight;
       }
+    });
 
-      blue = new CargoBoat(game, ShipsType.Blue, 500, 6700);
-      blue.el.visible = false;
+    blue = new CargoBoat(game, ShipsType.Blue, (mvd.x - 100), (mvd.y - 200));
+    green = new CargoBoat(game, ShipsType.Green, (mvd.x - 300), (mvd.y - 200));
 
-      green = new CargoBoat(game, ShipsType.Green, 900, 6700);
-      green.el.visible = false;
+    x = getRandomInt(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
+    y = getRandomInt(caribbean.yTop + 72, caribbean.yBottom - 72);
 
-      setTimeout(function() {
-        var mvd = map.getMvd();
-        blue.el.x = mvd.port.x - 100;
-        blue.el.y = mvd.port.y - 200;
-        blue.el.visible = true;
+    submarine = new Submarine(game, ShipsType.Submarine, x, y);
 
-        green.el.x = mvd.port.x - 300;
-        green.el.y = mvd.port.y - 200;
-        green.el.visible = true;
-      }, 3000);
+    // Crea el submarino chequeando que no este sobre una isla
+    // while (overlapsIsland) {
+    //   x = getRandomInt(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
+    //   y = getRandomInt(caribbean.yTop + 72, caribbean.yBottom - 72);
 
-      if (_admin) {
-        saveShips(_players, false);
-      }
-    }
+    //   submarine = new Submarine(game, ShipsType.Submarine, x, y);
+
+    //   if (game.physics.arcade.overlap(islands, submarine.el)) {
+    //     submarine.el.kill();
+    //   } else {
+    //     overlapsIsland = false;
+    //   }
+    // }
+
+    saveShips(players).done(function() {
+      deferred.resolve();
+    });
+
+    return deferred;
+  }
+
+  var init = function(_game) {
+    game = _game;
+    //appendShips(loadedShips);
   };
 
-  var saveShips = function(players, fromSaveBtn) {
+  var saveShips = function(players) {
     var getNicknameByRole = function (players, role) {
       var nickname;
       $.each(players, function(i, p) {
@@ -459,15 +461,14 @@ var ships = (function() {
       }
     ];
 
-    $.post("rest/ships/" + (fromSaveBtn ? 2 : 1), JSON.stringify(ships), function(response) {
-      if (fromSaveBtn) {
-        if (response == "success") {
-          alert("Guardado con exito.")
-        } else {
-          alert("Ocurrio un error.")
-        }
-      }
+    var deferred = $.Deferred();
+    var url = "rest/ships/" + gameId;
+
+    $.post(url, JSON.stringify(ships), function(response) {
+      deferred.resolve(response);
     });
+
+    return deferred;
   };
 
   var getSubmarine = function() {
@@ -482,12 +483,17 @@ var ships = (function() {
     return green;
   };
 
+  var setGameId = function(id) { gameId = id; }
+
   return {
     init: init,
     getSubmarine: getSubmarine,
     getBlue: getBlue,
     getGreen: getGreen,
     saveShips: saveShips,
-    fromLoad: fromLoad
+    generateShips: generateShips,
+    getShips: getShips,
+    appendShips: appendShips,
+    setGameId: setGameId
   }
-})();
+})(); 
