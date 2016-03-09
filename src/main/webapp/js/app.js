@@ -81,8 +81,15 @@ var app = (function  () {
     });
 
     $("#btn-save").click(function() {
-      ships.saveShips(players, true);
-      map.saveMap();
+      ships.setGameId(2);
+      ships.saveShips(players).done(function() {
+        ships.setGameId(1);
+      });
+
+      map.setGameId(2);
+      map.saveMap().done(function() {
+        map.setGameId(1);
+      });;
     });
 
     $("#btn-route-ok").click(function() {
@@ -99,6 +106,9 @@ var app = (function  () {
 
       // Guardo que la partida se inicia normalemente y no desde reanudar
       fromLoad = false;
+      
+      map.setGameId(1);
+      ships.setGameId(1);
     });
 
     $("#btn-load-game").click(function(event) {
@@ -108,6 +118,9 @@ var app = (function  () {
 
       // Guardo que la partida se inicia desde reanudar
       fromLoad = true;
+
+      map.setGameId(2);
+      ships.setGameId(2);
     });
 
     $(".button-prev").click(function() {
@@ -152,17 +165,15 @@ var app = (function  () {
               // que seran enviados por el websocket
               webSocket.setUser(shipType);
 
-              if (!fromLoad) {
-                map.setGameId(1);
-                ships.setGameId(1);
-              } else {
-                map.setGameId(2);
-                ships.setGameId(2);
-              }
-
               if (shipType == ShipsType.Submarine && !fromLoad) {
                 $.when(map.generateIslands(), map.generatePorts()).done(function() {
                   init();                 
+                });
+              } else {
+                $.when(map.getPorts(), map.getIslands()).done(function() {
+                  ships.getShips().done(function() {
+                    init();
+                  });   
                 });
               }
             }
@@ -211,7 +222,7 @@ var app = (function  () {
     // Le paso la referencia del objeto juego a los otros archivos js
     map.init(game);
 
-    if (admin) {
+    if (admin && !fromLoad) {
       ships.init(game);
       ships.generateShips(players).done(function() {
         var jsonMsg = { id: WebSocketIDs.EverythingGenerated }

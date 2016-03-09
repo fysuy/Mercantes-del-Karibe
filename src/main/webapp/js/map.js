@@ -66,6 +66,17 @@ var map = (function  () {
     return $.post(url, JSON.stringify(islands));
   }
 
+  var saveMap = function() {
+    var url = "rest/map/islands/" + gameId;
+    var deferred = $.Deferred();
+
+    $.post(url, JSON.stringify(loadedIslands), function() {
+      deferred.resolve();
+    });
+
+    return deferred;
+  }
+
   // Obtengo las islas desde el servicio
   var getIslands = function() {
     var url = "rest/map/islands/" + gameId;
@@ -230,6 +241,7 @@ var map = (function  () {
     getPorts: getPorts,
     getIslands: getIslands,
     getLoadedPorts: getLoadedPorts,
-    setGameId: setGameId
+    setGameId: setGameId,
+    saveMap: saveMap
   }
 })();

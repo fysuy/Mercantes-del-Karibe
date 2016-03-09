@@ -52,11 +52,11 @@ public class Main {
 			pstmt.close();
 			
 			/* inserto las 2 instancias del juego ("en curso" y "guardado") */
-			String insertGame1 = "insert into mdk.game values (1)";
+			String insertGame1 = "insert into mdk.game(id) values (1)";
 			pstmt = (PreparedStatement) con.prepareStatement(insertGame1);
 			pstmt.executeUpdate();
 			pstmt.close();
-			String insertGame2 = "insert into mdk.game values (2)";
+			String insertGame2 = "insert into mdk.game(id) values (2)";
 			pstmt = (PreparedStatement) con.prepareStatement(insertGame2);
 			pstmt.executeUpdate();
 			pstmt.close();
