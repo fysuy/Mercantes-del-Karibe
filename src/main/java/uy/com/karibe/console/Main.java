@@ -94,6 +94,7 @@ public class Main {
 					+ " y int NOT NULL, "
 					+ " rotation int NOT NULL, "
 					+ " health int NOT NULL, "
+					+ " state varchar(50), "
 					+ " gameId int NOT NULL, "
 					+ " nickname varchar(50), "
 					+ " FOREIGN KEY (gameId) REFERENCES mdk.game(id))";

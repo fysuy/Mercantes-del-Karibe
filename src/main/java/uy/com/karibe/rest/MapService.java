@@ -39,7 +39,7 @@ public class MapService {
 			Class.forName(driver);
 			String url = "jdbc:mysql://localhost:3306/mdk";
 			con = (Connection) DriverManager
-					.getConnection(url, "root", "toor");
+					.getConnection(url, "root", "root");
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}

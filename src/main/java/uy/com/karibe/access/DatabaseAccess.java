@@ -66,10 +66,11 @@ public class DatabaseAccess {
 				int x = rs.getInt("x");
 				int y = rs.getInt("y");
 				int rotation = rs.getInt("rotation");
+				String state = rs.getString("state");
 				int health = rs.getInt("health");
 				String nickname = rs.getString("nickname");
 				
-				Ship s = new Ship(gameId, name, x, y, rotation, health, nickname);
+				Ship s = new Ship(gameId, name, x, y, rotation, health, state, nickname);
 				ships.add(s);
 			}
 			rs.close();
@@ -212,8 +213,9 @@ public class DatabaseAccess {
 			pstmt.setInt(3, s.getY());
 			pstmt.setInt(4, s.getRotation());
 			pstmt.setInt(5, s.getHealth());
-			pstmt.setInt(6, gameId);
-			pstmt.setString(7, s.getNickname());
+			pstmt.setString(6, s.getState());
+			pstmt.setInt(7, gameId);
+			pstmt.setString(8, s.getNickname());
 			pstmt.executeUpdate();
 			pstmt.close();
 		} catch(Exception ex) {
