@@ -9,7 +9,6 @@
  */
 package uy.com.karibe.websocket;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -41,7 +40,7 @@ public class WebSocketServerEndpoint {
 		add("blue");
 		add("green");
 	}};
-	private final Object writeLock = new Object();
+
 	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 	private static final List<Player> players = new ArrayList<Player>();
 	
@@ -98,7 +97,8 @@ public class WebSocketServerEndpoint {
 	}
 
 	@OnClose
-	synchronized public void onClose(Session session){		
+	synchronized public void onClose(Session session){	
+		boolean debug = true;
 		try {
 			//Al cerrar la ventana del navegador, el usuario se elimina de la sesion.
 			sessions.remove(session);
@@ -114,7 +114,7 @@ public class WebSocketServerEndpoint {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (debug) { e.printStackTrace(); }
 		}
 	}
 
@@ -125,17 +125,15 @@ public class WebSocketServerEndpoint {
 	
 	//Metodo para enviar los mensajes a todos las sesiones conectadas.
 	synchronized private void sendMessageToAll(String message, Session session, boolean includeSelf) {
-		for (Iterator<Session> iterator = sessions.iterator(); iterator.hasNext(); ) {
-			Session s = iterator.next();
-			try {
+		try {
+			for (Iterator<Session> iterator = sessions.iterator(); iterator.hasNext(); ) {
+				Session s = iterator.next();
 				if(s.getId() != session.getId() || includeSelf) {
-					synchronized (writeLock) {
-						s.getBasicRemote().sendText(message);	
-					}
+					s.getBasicRemote().sendText(message);
 				}
-			} catch (IOException ex) {
-				System.out.println(ex.getMessage());
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
