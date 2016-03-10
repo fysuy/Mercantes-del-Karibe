@@ -359,15 +359,36 @@ var ships = (function() {
   var appendShips = function() {
     $.each(loadedShips, function(i, ship) {
       if (ship.name == ShipsType.Submarine) {
+        // Creo al submarino, le cargo su vida y estado
         submarine = new Submarine(game, ShipsType.Submarine, ship.x, ship.y);
+        submarine.el.health = ship.health;
+        submarine.state = ship.state;
+
+        if (ship.state == ShipStates.Destroyed) {
+          submarine.el.kill();
+        }
       }
 
       if (ship.name == ShipsType.Blue) {
+        // Creo al azul, le cargo su vida y estado
         blue = new CargoBoat(game, ShipsType.Blue, ship.x, ship.y);
+        blue.el.health = ship.health;
+        blue.state = ship.state;
+
+        if (ship.state == ShipStates.Destroyed || ship.state == ShipStates.Arrived) {
+          blue.el.kill();
+        }
       }
 
       if (ship.name == ShipsType.Green) {
+        // Creo al verde, le cargo su vida y estado
         green = new CargoBoat(game, ShipsType.Green, ship.x, ship.y);
+        green.el.health = ship.health;
+        green.state = ship.state;
+
+        if (ship.state == ShipStates.Destroyed || ship.state == ShipStates.Arrived) {
+          green.el.kill();
+        } 
       }
     }); 
   }
@@ -441,6 +462,7 @@ var ships = (function() {
         y: Math.floor(submarine.el.y),
         rotation: Math.floor(submarine.el.rotation),
         health: submarine.el.health,
+        state: submarine.state,
         nickname: getNicknameByRole(players, ShipsType.Submarine)
       },
       {
@@ -449,6 +471,7 @@ var ships = (function() {
         y: Math.floor(blue.el.y),
         rotation: Math.floor(blue.el.rotation),
         health: blue.el.health,
+        state: blue.state,
         nickname: getNicknameByRole(players, ShipsType.Blue)
       },
       {
@@ -457,6 +480,7 @@ var ships = (function() {
         y: Math.floor(green.el.y),
         rotation: Math.floor(green.el.rotation),
         health: green.el.health,
+        state: green.state,
         nickname: getNicknameByRole(players, ShipsType.Green)
       }
     ];
