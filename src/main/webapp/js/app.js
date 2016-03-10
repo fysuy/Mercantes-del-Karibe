@@ -444,10 +444,9 @@ var app = (function  () {
 
           // Update fin del juego
           case WebSocketIDs.GameOver:
-            console.log('GAME OVER' + jsonMsg.result + ' ' + submarine.state + ' ' + blue.state + ' ' + green.state)
             setTimeout(function() {
               toggleGameOver(jsonMsg.result);
-            }, 100);
+            }, 200);
             break;
 
           //Si un jugador cierra la sesion, debe de morir su nave.  
@@ -530,12 +529,12 @@ function update() {
       game.physics.arcade.collide([ny.shore, mvd.shore], submarine.el);
 
       /* Si el barco tiene la luz apagada, el submarino
-      lo ve solo dentro de un radio de 200.
+      lo ve solo dentro de un radio de 300.
       Si el barco tiene la luz prendida, el submarino lo ve siempre */ 
 
       // Actualizo la luz del barco azul
       if (blue.light == false 
-        && game.physics.arcade.distanceBetween(submarine.el, blue.el) > 400) {
+        && game.physics.arcade.distanceBetween(submarine.el, blue.el) > 300) {
         blue.el.alpha = 0;
     } else {
       blue.el.alpha = 1;
@@ -543,7 +542,7 @@ function update() {
 
       // Actualizo la luz del barco verde
       if (green.light == false 
-        && game.physics.arcade.distanceBetween(submarine.el, green.el) > 400) {
+        && game.physics.arcade.distanceBetween(submarine.el, green.el) > 300) {
         green.el.alpha = 0;
     } else {
       green.el.alpha = 1;
@@ -824,7 +823,7 @@ function update() {
   var showSafeRoute = function() {
     // Detecto donde se genero el submarino
     var strSubmarineSpotted ;
-    var worldThird = map.worldBounds.xBottomRight;
+    var worldThird = map.worldBounds.xBottomRight / 3;
     if (submarine.el.x < worldThird) {
       strSubmarineSpotted = 'oeste ';
     } else if (submarine.el.x < worldThird * 2){
@@ -993,7 +992,7 @@ function update() {
 
     var result = null;
     var message = null;
-
+    
     // Llegaron los cargueros
     if (blue.state == ShipStates.Arrived 
       && green.state == ShipStates.Arrived) {
@@ -1015,6 +1014,11 @@ function update() {
       && (blue.state == ShipStates.Destroyed || green.state == ShipStates.Destroyed)) {
         // Murio el submarino y murio algun carguero
         console.log('Murio el submarino y murio algun carguero');
+        result = GameResults.Draw;
+      } else if ((blue.state == ShipStates.Destroyed || green.state == ShipStates.Destroyed)
+        && (blue.state == ShipStates.Arrived || green.state == ShipStates.Arrived)) {
+        // Murio un carguero y llego el otro
+        console.log('Murio un carguero y llego el otro');
         result = GameResults.Draw;
       }
       return result;

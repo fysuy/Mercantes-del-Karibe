@@ -36,7 +36,7 @@ public class Queries {
 	}
 	
 	public static String insertShip() {
-		String s = "insert into mdk.ships(name, x, y, rotation, health, gameId, nickname) values (?, ?, ?, ?, ?, ?, ?)";
+		String s = "insert into mdk.ships(name, x, y, rotation, health, state, gameId, nickname) values (?, ?, ?, ?, ?, ?, ?, ?)";
 		return s;
 	}
 	
