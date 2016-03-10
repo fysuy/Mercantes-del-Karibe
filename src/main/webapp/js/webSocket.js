@@ -1,29 +1,25 @@
 var webSocket = (function() {  
-  var ip = "192.168.1.41";
+  var ip = "192.168.1.42";
 
-  var connection;
-  var user;
+  var connection, userRole, gameId;
 
   var sendMessage = function (message) {
-    message.user = user;
+    message.user = userRole;
     connection.send(JSON.stringify(message));
   };
 
   var setUser = function (_user) {
-    user = _user;
+    userRole = _user;
   };
 
   var setOnMessage = function (fn) {
     connection.onmessage = fn;
   };
 
-  var init = function(_fromLoad, _nickname) {
-    var conStr = "ws://" + ip + ":8080/Mercantes-del-Karibe/wsServerEndpoint/" + _nickname;
-    if (_fromLoad) {
-      connection = new WebSocket(conStr + "/" + "false");
-    } else {
-      connection = new WebSocket(conStr + "/" + "true");
-    }
+  var init = function(_nickname) {
+    var conStr = "ws://" + ip + ":8080/Mercantes-del-Karibe/wsServerEndpoint/" + gameId + "/" + _nickname;
+
+    connection = new WebSocket(conStr);
     
     connection.onerror = function(evt) {
       console.log(evt);
@@ -36,10 +32,13 @@ var webSocket = (function() {
     return connection;
   };
 
+  var setGameId = function(id) { gameId = id; }
+
   return {
     sendMessage: sendMessage,
     setOnMessage : setOnMessage,
     setUser: setUser, 
+    setGameId: setGameId,
     init: init
   }
 })();

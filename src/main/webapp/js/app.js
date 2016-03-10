@@ -15,7 +15,8 @@ var WebSocketIDs = {
   ShipShot: 'shipShot',
   GameOver: 'gameOver',
   GamePaused: 'gamePaused',
-  ShipLeft: 'shipLeft'
+  ShipLeft: 'shipLeft',
+  EverythingGenerated: 'everythingGenerated'
 };
 
 var GameResults = {
@@ -50,26 +51,20 @@ var Strings = {
   ShipGreenLeft: 'El carguero verde abandono la partida.'
 }
 
-function getParameterByName(name, url) {
-  if (!url) url = window.location.href;
-  name = name.replace(/[\[\]]/g, "\\$&");
-  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-  results = regex.exec(url);
-  if (!results) return null;
-  if (!results[2]) return '';
-  return decodeURIComponent(results[2].replace(/\+/g, " "));
+function getRandomInt(min, max) {
+  return Math.floor((Math.random() * (max - min + 1)) + min);
 }
-
-var height = window.innerHeight;
-var width = window.innerWidth;
 
 var app = (function  () {
   var cursors, game, pauseButton,
-  pauseButton,
+  pauseButton, nickname,
   gameContainer = 'game-container',
   submarine, blue, green, ship,
   caribbean, ny, mvd, mask, players,
   currentSpeed, shipType, fromLoad;
+
+  var height = window.innerHeight;
+  var width = window.innerWidth;
 
   var addPlayer = function(name, role) {
     $("#players-list").html(name);
@@ -86,8 +81,15 @@ var app = (function  () {
     });
 
     $("#btn-save").click(function() {
-      ships.saveShips(players, true);
-      map.saveMap();
+      ships.setGameId(2);
+      ships.saveShips(players).done(function() {
+        ships.setGameId(1);
+      });
+
+      map.setGameId(2);
+      map.saveMap().done(function() {
+        map.setGameId(1);
+      });;
     });
 
     $("#btn-route-ok").click(function() {
@@ -104,6 +106,9 @@ var app = (function  () {
 
       // Guardo que la partida se inicia normalemente y no desde reanudar
       fromLoad = false;
+      
+      map.setGameId(1);
+      ships.setGameId(1);
     });
 
     $("#btn-load-game").click(function(event) {
@@ -113,6 +118,9 @@ var app = (function  () {
 
       // Guardo que la partida se inicia desde reanudar
       fromLoad = true;
+
+      map.setGameId(2);
+      ships.setGameId(2);
     });
 
     $(".button-prev").click(function() {
@@ -126,67 +134,67 @@ var app = (function  () {
       $(".insert-nickname").hide();
       $(".select-sides").show();
 
-      var nickname = $("#insert-nickname").val();
-      webSocket.init(fromLoad, nickname);
-
-      //Solicito los usuarios conectados
-      setTimeout(function() {
-        var message = {
-          id: "getUsersConnected",
-          message: ""
-        }
-
-        webSocket.sendMessage(message);
-      }, 2000); 
+      nickname = $("#insert-nickname").val();
+      webSocket.setGameId(!fromLoad ? 1 : 2);
+      webSocket.init(nickname);
 
       webSocket.setOnMessage(function(msg) {
         var jsonMsg = JSON.parse(msg.data);
         
-        //Obtengo los usuarios conectados
-        if (jsonMsg.id == "getUsersConnected") {
+        //Obtengo los usuarios conectados y actualiza la lista del menu
+        if (jsonMsg.id == "setUsersConnected") {
           addPlayer(jsonMsg.message);
         }
 
+        if (jsonMsg.id == "everythingGenerated") {
+          $.when(map.getPorts(), map.getIslands()).done(function() {
+            ships.getShips().done(function() {
+              init();
+            });   
+          });
+        }
+
         if (jsonMsg.id == "initGame") {
-          players = JSON.parse(jsonMsg.message);
-
-          if (fromLoad) {
-            map.fromLoad();
-            ships.fromLoad();
-          }
-
           setTimeout(function() {
+            players = JSON.parse(jsonMsg.message);
+
             $.each(players, function(i, player) {
-              if (player.name == $("#insert-nickname").val()) {
-                webSocket.setUser(player.role);
-                if (player.role == ShipsType.Submarine) {
-                  init(player.role);
-                } else {
-                  setTimeout(function() {
-                    map.fromLoad(false, function() {
-                      setTimeout(function() {
-                        init(player.role); //Comienzo Juego
-                      }, 2000);       
-                    });
-                  }, 1000);
-                }         
+              if (player.name == nickname) {
+                shipType = player.role;
+
+                // Seteo el rol del jugador para los mensajes
+                // que seran enviados por el websocket
+                webSocket.setUser(shipType);
+
+                if (shipType == ShipsType.Submarine && !fromLoad) {
+                  $.when(map.generateIslands(), map.generatePorts()).done(function() {
+                    init();                 
+                  });
+                } 
+
+                if (fromLoad) {
+                  $.when(map.getPorts(), map.getIslands()).done(function() {
+                    ships.getShips().done(function() {
+                      init();
+                    });   
+                  });
+                }
               }
             });
-          }, 500);
+          }, 2000);
         }
       });
     });
   });
 
-  var init = function(_shipType) {
-    shipType = _shipType;
-
+  var init = function() {
     game = new Phaser.Game(width, height, Phaser.AUTO, gameContainer, { 
       preload: preload, 
       create: create, 
       update: update, 
       render: render 
     });
+
     //Foco al juego
     $('#game-title').remove();
     $('#select-sides').remove();
@@ -214,11 +222,20 @@ var app = (function  () {
 
     // Inicio todo lo relacionado al mapa del juego
     var admin = (shipType == ShipsType.Submarine);
-    //map.fromLoad(false);
-    map.init(game, admin, fromLoad);
-    
-    // Inicio las naves
-    ships.init(players, game, admin, fromLoad);
+
+    // Le paso la referencia del objeto juego a los otros archivos js
+    map.init(game);
+
+    if (admin && !fromLoad) {
+      ships.init(game);
+      ships.generateShips(players).done(function() {
+        var jsonMsg = { id: WebSocketIDs.EverythingGenerated }
+        webSocket.sendMessage(jsonMsg);
+      });
+    } else {
+      ships.init(game);
+      ships.appendShips();
+    }
 
     submarine = ships.getSubmarine();
     blue = ships.getBlue();
