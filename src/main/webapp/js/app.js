@@ -61,7 +61,8 @@ var app = (function  () {
   gameContainer = 'game-container',
   submarine, blue, green, ship,
   caribbean, ny, mvd, mask, players,
-  currentSpeed, shipType, fromLoad;
+  currentSpeed, shipType, fromLoad,
+  existsSavedGame;
 
   var height = window.innerHeight;
   var width = window.innerWidth;
@@ -111,17 +112,32 @@ var app = (function  () {
       ships.setGameId(1);
     });
 
-    $("#btn-load-game").click(function(event) {
-      $(".main-menu").hide();
-      $(".insert-nickname")
-        .show();
+    // Averiguo si hay una partida en curso
+    $.get("rest/ships/2", function(data) {
+      if (data.length == 0) {
+        existsSavedGame = false;
+      } else {
+        existsSavedGame = true;
+      }
+    }).done(function() {
+      if (existsSavedGame) {
+        // Si hay, habilito el boton REANUDAR
+        $("#btn-load-game").addClass("button-yellow");
+        $("#btn-load-game").removeClass("button-locked");
 
-      // Guardo que la partida se inicia desde reanudar
-      fromLoad = true;
+        $("#btn-load-game").click(function(event) {
+          $(".main-menu").hide();
+          $(".insert-nickname")
+            .show();
 
-      map.setGameId(2);
-      ships.setGameId(2);
-    });
+          // Guardo que la partida se inicia desde reanudar
+          fromLoad = true;
+
+          map.setGameId(2);
+          ships.setGameId(2);
+        });
+      }
+    });    
 
     $(".button-prev").click(function() {
       $(".main-menu").show();
@@ -275,7 +291,9 @@ var app = (function  () {
     pauseButton.onDown.add(listenerPause, this);
 
     // Muestro la ruta segura
-    showSafeRoute();  
+    if (!fromLoad) {
+      showSafeRoute();
+    }
 
     /* ------------------------------------- */
     /* ---- COMPORTARMIENTO MENSAJES WS ---- */
