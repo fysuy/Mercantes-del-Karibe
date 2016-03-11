@@ -44,7 +44,7 @@ public class ShipService {
 			InputStream input = classLoader.getResourceAsStream("Config.properties");
 			p.load(input);
 			String driver = p.getProperty("persistencia.driver");
-			String url = p.getProperty("persistencia.url");
+			String url = p.getProperty("persistencia.services");
 			String user = p.getProperty("persistencia.user");
 			String password = p.getProperty("persistencia.password");
 
