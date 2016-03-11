@@ -1,5 +1,5 @@
 var webSocket = (function() {  
-  var ip = "192.168.1.44";
+  var ip = "192.168.1.46";
 
   var connection, userRole, gameId;
 
