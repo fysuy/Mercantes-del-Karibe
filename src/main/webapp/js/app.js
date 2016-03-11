@@ -66,9 +66,6 @@ var app = (function  () {
   var height = window.innerHeight;
   var width = window.innerWidth;
 
-  //var image = new Image();
-  //image.src ='http://rack.3.mshcdn.com/media/ZgkyMDEyLzEwLzE5LzExXzMzXzMzXzE3Nl9maWxlCnAJdGh1bWIJMTIwMHg5NjAwPg/462b8072';
-
   var addPlayer = function(name, role) {
     $("#players-list").html(name);
   }
