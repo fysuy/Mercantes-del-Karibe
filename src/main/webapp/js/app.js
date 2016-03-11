@@ -47,7 +47,7 @@ var Strings = {
   GameResultNazis: 'Los nazis ganaron esta batalla. Las cargas de corned beef uruguayo fueron destruidas.',
   GameResultUruguay: 'Los cargueros uruguayos lograron sobrevivir a los ataques nazis.',
   SubmarineLeft: 'El submarino abandono la partida.',
-  ShipBlueLeft: 'El carguero azul abandono la patida.',
+  ShipBlueLeft: 'El carguero azul abandono la partida.',
   ShipGreenLeft: 'El carguero verde abandono la partida.'
 }
 
@@ -65,6 +65,9 @@ var app = (function  () {
 
   var height = window.innerHeight;
   var width = window.innerWidth;
+
+  //var image = new Image();
+  //image.src ='http://rack.3.mshcdn.com/media/ZgkyMDEyLzEwLzE5LzExXzMzXzMzXzE3Nl9maWxlCnAJdGh1bWIJMTIwMHg5NjAwPg/462b8072';
 
   var addPlayer = function(name, role) {
     $("#players-list").html(name);
@@ -414,6 +417,8 @@ var app = (function  () {
                   var destroyed = submarine.damage(jsonMsg.ammo);
                   if (destroyed) {
                     $('#hud #messages').text(Strings.ShipKilledSubmarine);
+                    // show Modal
+                     $('#myModal').modal('show');
                   }
                   submarine.el.kill();
                   $('#hud #messages').text(Strings.ShipKilledSubmarine);
@@ -421,9 +426,11 @@ var app = (function  () {
                 break;
               case ShipsType.Blue: 
                 var destroyed = blue.damage(jsonMsg.ammo);
-                if (destroyed) {
+                if (destroyed) {                      
                   if (ship.el.type == ShipsType.Blue) {
                     $('#hud #messages').text(Strings.PlayerKilled);
+                    // show Modal
+                    $('#myModal').modal('show');
                   } else {
                     $('#hud #messages').text(Strings.ShipKilledBlue);
                   }
@@ -432,8 +439,11 @@ var app = (function  () {
               case ShipsType.Green: 
                 var destroyed = green.damage(jsonMsg.ammo);
                 if (destroyed) {
+                  
                   if (ship.el.type == ShipsType.Green) {
                     $('#hud #messages').text(Strings.PlayerKilled);
+                    // show Modal
+                    $('#myModal').modal('show');
                   } else {
                     $('#hud #messages').text(Strings.ShipKilledGreen);
                   }
