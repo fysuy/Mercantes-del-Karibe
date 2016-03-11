@@ -418,20 +418,6 @@ var ships = (function() {
 
     submarine = new Submarine(game, ShipsType.Submarine, x, y);
 
-    // Crea el submarino chequeando que no este sobre una isla
-    // while (overlapsIsland) {
-    //   x = getRandomInt(map.worldBounds.xTopLeft, map.worldBounds.xBottomRight);
-    //   y = getRandomInt(caribbean.yTop + 72, caribbean.yBottom - 72);
-
-    //   submarine = new Submarine(game, ShipsType.Submarine, x, y);
-
-    //   if (game.physics.arcade.overlap(islands, submarine.el)) {
-    //     submarine.el.kill();
-    //   } else {
-    //     overlapsIsland = false;
-    //   }
-    // }
-
     saveShips(players).done(function() {
       deferred.resolve();
     });
@@ -520,4 +506,4 @@ var ships = (function() {
     appendShips: appendShips,
     setGameId: setGameId
   }
-})(); 
+})();

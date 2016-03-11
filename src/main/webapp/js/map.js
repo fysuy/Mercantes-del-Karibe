@@ -85,6 +85,7 @@ var map = (function  () {
       promiseSave.resolve();
     });
 
+    alert('Partida guardada');
     return promiseSave;
   }
 
@@ -166,10 +167,6 @@ var map = (function  () {
       }
     });
 
-    /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-    /* xMvdPort y xNyPort no quedan cargados */
-    /* ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ */
-
     ny = {}, mvd = {};
 
     // Creo la costa de Montevideo
@@ -219,9 +216,6 @@ var map = (function  () {
     mvd.land.line2.drawRect(worldBounds.xTopLeft, worldBounds.yTopLeft - 147, worldBounds.xBottomRight, 12);
     mvd.land.line2.endFill();
     mvd.land.line2.alpha = 0.1;
-
-    console.log("dibujo puertos");
-    console.log("MVD: " + xMvdPort + " NY: " + xNyPort);
 
     // Dibujo el puerto de new york
     ny.port = game.add.sprite(xNyPort, 0, 'port');

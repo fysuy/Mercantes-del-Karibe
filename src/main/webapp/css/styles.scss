@@ -10,7 +10,7 @@
     font-style: normal;
 }
 
-$font-stack: minecraftiaregular, Helvetica, sans-serif;
+$font-stack: 'VT323', Helvetica, sans-serif;
 $bg-color: #2c8af4;
 $color-white: #fdfff9;
 
@@ -181,11 +181,8 @@ p {
 }
 
 .divider {
-  height: 4px;
-  background-color: $color-white;
-  margin-top: 10px;
+  border-bottom: 3px solid #ffffff;
   margin-bottom: 10px;
-  display: block;
 }
 
 .inline-block { display: inline-block; }

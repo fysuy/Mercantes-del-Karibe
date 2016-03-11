@@ -10,7 +10,7 @@ html, body {
   height: 100%;
   width: 100%; }
   html body, body body {
-    font: 30px minecraftiaregular, Helvetica, sans-serif;
+    font: 30px "VT323", Helvetica, sans-serif;
     color: #fdfff9;
     background-color: #2c8af4;
     text-transform: uppercase; }
@@ -159,11 +159,8 @@ p {
   overflow-y: scroll; }
 
 .divider {
-  height: 4px;
-  background-color: #fdfff9;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  display: block; }
+  border-bottom: 3px solid #ffffff;
+  margin-bottom: 10px; }
 
 .inline-block {
   display: inline-block; }
