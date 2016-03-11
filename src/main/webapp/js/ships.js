@@ -520,4 +520,4 @@ var ships = (function() {
     appendShips: appendShips,
     setGameId: setGameId
   }
-})(); 
+})();

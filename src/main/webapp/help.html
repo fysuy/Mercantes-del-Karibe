@@ -1,35 +1,136 @@
 <html>
     <head>
         <title>Mercantes del Karibe</title>
-        <link href="css/common.min.css" rel="stylesheet">
-        <script type="text/javascript" src="js/common.js"></script>
+          <meta charset="UTF-8">
+          <title>Mercantes del Karibe</title>
+          <link href="css/bootstrap.min.css" rel="stylesheet">
+          <link href="css/styles.css" rel="stylesheet">
+          <link href='https://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
+          <script type="text/javascript" src="js/jquery.min.js"></script>
+          <script type="text/javascript" src="js/bootstrap.min.js"></script>
     </head>
     <body>
-        <div id="container-page" >
-            <div id="container-game">
-                <div id="svg" class="container">
+        <div class="container">
 
-                    <!-- Adentro de esto va el juego -->
-                    
-                    <div id="container-inner container">
-                        <div id="game-title" class="row text-center">
-                            <img src="assets/title-rules.png" />
-                        </div>  
 
-                        <div class="row col-xs-12 position-absolute bottom">
-                            <a href="main-menu.html" class="button-style button-content-size button-yellow button-bottom float-left">
-                                <p class="button-text">Volver</p>
-                            </a>
-                            
-                        </div>
-                    
-                    </div>
-                    
-                    <!-- Hasta aca el juego -->
-            
+
+                <!-- CONTROLES -->
+                <div class="game-title text-center">
+                    <img src="assets/title-controls.png" />
                 </div>
-            </div>
+
+                    <!-- acelerar -->
+                    <div class="row divider">
+                        <div class="col-xs-8">
+                            <p>Acelerar</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <p class="text-black">Flecha arriba</p>
+                        </div>
+                    </div>
+                    <!-- izquierda -->
+                    <div class="row divider">
+                        <div class="col-xs-8">
+                            <p>Rotar a la izquierda</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <p class="text-black">Flecha izquierda</p>
+                        </div>
+                    </div>
+                    <!-- derecha -->
+                    <div class="row divider">
+                        <div class="col-xs-8">
+                            <p>Rotar a la derecha</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <p class="text-black">Flecha derecha</p>
+                        </div>
+                    </div>
+                    <!-- luz -->
+                    <div class="row divider">
+                        <div class="col-xs-8">
+                            <p>Encender/Apagar luz (cargueros)</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <p class="text-black">F</p>
+                        </div>
+                    </div>
+                    <!-- disparar cañon -->
+                    <div class="row divider">
+                        <div class="col-xs-8">
+                            <p>Disparar cañon (carguero azul y submarino)</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <p class="text-black">Espacio</p>
+                        </div>
+                    </div>
+                    <!-- disparar misil -->
+                    <div class="row divider">
+                        <div class="col-xs-8">
+                            <p>Disparar misil (submarino)</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <p class="text-black">Ctrl</p>
+                        </div>
+                    </div>
+                    <!-- pausa -->
+                    <div class="row divider">
+                        <div class="col-xs-8">
+                            <p>Pausa</p>
+                        </div>
+                        <div class="col-xs-4">
+                            <p class="text-black">Esc</p>
+                        </div>
+                    </div>
+
+                <!-- REGLAS -->
+                <div class="game-title text-center">
+                    <img src="assets/title-rules.png" />
+                </div>
+
+                <div class="row divider">
+                    <div class="col-xs-8">
+                        <p>Ambos cargueros hundidos</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <p class="text-black">Gana submarino</p>
+                    </div>
+                </div>
+                <div class="row divider">
+                    <div class="col-xs-8">
+                        <p>Ambos cargueros llegan a Nueva York</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <p class="text-black">Gana equipo de los cargueros</p>
+                    </div>
+                </div>
+                <div class="row divider">
+                    <div class="col-xs-8">
+                        <p>Submarino hundido</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <p class="text-black">Gana equipo de los cargueros</p>
+                    </div>
+                </div>
+                <div class="row divider">
+                    <div class="col-xs-8">
+                        <p>Llega un carguero a Nueva York y el otro es hundido</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <p class="text-black">Empate</p>
+                    </div>
+                </div>
+                <div class="row divider">
+                    <div class="col-xs-8">
+                        <p>Un carguero y el submarino hundidos</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <p class="text-black">Empate</p>
+                    </div>
+                </div>
+
         </div>
+
         <script src="//localhost:35729/livereload.js"></script>
     </body>
 </html>
