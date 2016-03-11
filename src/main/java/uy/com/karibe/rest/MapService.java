@@ -9,9 +9,12 @@
  */
 package uy.com.karibe.rest;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -34,13 +37,20 @@ public class MapService {
 	private Connection con;
 	
 	public MapService() {
-		String driver = "com.mysql.jdbc.Driver";
 		try {
+			Properties p = new Properties();		
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			InputStream input = classLoader.getResourceAsStream("Config.properties");
+			p.load(input);
+			String driver = p.getProperty("persistencia.driver");
+			String url = p.getProperty("persistencia.url");
+			String user = p.getProperty("persistencia.user");
+			String password = p.getProperty("persistencia.password");
+
+			/* cargo el driver */
 			Class.forName(driver);
-			String url = "jdbc:mysql://localhost:3306/mdk";
-			con = (Connection) DriverManager
-					.getConnection(url, "root", "root");
-		} catch (ClassNotFoundException | SQLException e) {
+			con = (Connection) DriverManager.getConnection(url, user, password);
+		} catch (ClassNotFoundException | SQLException | IOException e) {
 			e.printStackTrace();
 		}
 	}

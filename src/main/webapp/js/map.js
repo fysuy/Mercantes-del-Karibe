@@ -68,21 +68,37 @@ var map = (function  () {
 
   var saveMap = function() {
     var url = "rest/map/islands/" + gameId;
-    var deferred = $.Deferred();
+    var promisePorts = $.Deferred();
+    var promiseIslands = $.Deferred();
+    var promiseSave = $.Deferred();
 
     $.post(url, JSON.stringify(loadedIslands), function() {
-      deferred.resolve();
+      promiseIslands.resolve();
     });
 
-    return deferred;
+    url = "rest/map/ports/" + gameId;
+    $.post(url, JSON.stringify(loadedPorts), function() {
+      promisePorts.resolve();
+    });
+
+    $.when(promiseIslands.done(), promisePorts.done()).done(function() {
+      promiseSave.resolve();
+    });
+
+    return promiseSave;
   }
 
   // Obtengo las islas desde el servicio
   var getIslands = function() {
+    var deferred = $.Deferred();
+    
     var url = "rest/map/islands/" + gameId;
-    return $.get(url, function(response) {
+    $.get(url, function(response) {
       loadedIslands = response;
+      deferred.resolve();
     });
+
+    return deferred;
   }
 
   // Adjunto las islas al objeto juego
@@ -120,10 +136,15 @@ var map = (function  () {
 
   // Obtengo las coordenas de los puertos
   var getPorts = function() {
+    var deferred = $.Deferred();
+
     var url = "rest/map/ports/" + gameId;
-    return $.get(url, function(response) {
+    $.get(url, function(response) {
       loadedPorts = response;
+      deferred.resolve();
     });
+
+    return deferred;
   }
 
   var getLoadedPorts = function() {

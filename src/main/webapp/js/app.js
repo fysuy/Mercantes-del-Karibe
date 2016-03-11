@@ -168,19 +168,18 @@ var app = (function  () {
                 // Seteo el rol del jugador para los mensajes
                 // que seran enviados por el websocket
                 webSocket.setUser(shipType);
-
-                if (shipType == ShipsType.Submarine && !fromLoad) {
-                  $.when(map.generateIslands(), map.generatePorts()).done(function() {
-                    init();                 
-                  });
-                } 
-
                 if (fromLoad) {
                   $.when(map.getPorts(), map.getIslands()).done(function() {
                     ships.getShips().done(function() {
                       init();
                     });   
                   });
+                } else {
+                  if (shipType == ShipsType.Submarine) {
+                    $.when(map.generateIslands(), map.generatePorts()).done(function() {
+                      init();                 
+                    });
+                  } 
                 }
               }
             });
